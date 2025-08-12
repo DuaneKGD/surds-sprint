@@ -50,10 +50,10 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
   button:disabled{opacity:.6; cursor:not-allowed}
   .card{background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); margin-top:16px}
 
-  /* Start overlay (home screen) */
+  /* Home overlay */
   .startOverlay{
     position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-    padding:24px; background:rgba(255,255,255,.6); backdrop-filter: blur(6px);
+    padding:24px; background:rgba(255,255,255,.7); backdrop-filter: blur(6px);
     z-index:10; transition:opacity .4s ease, transform .4s ease;
   }
   .startOverlay.off{ opacity:0; pointer-events:none; transform: scale(.98) translateY(-6px); }
@@ -127,6 +127,15 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
   .feedback{min-height:28px; margin-top:10px}
   .ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:var(--warn)}
   .footer{color:#6b7280; font-size:12px; margin-top:18px; text-align:center}
+
+  /* Name modal */
+  .modal{
+    position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+    background:rgba(15,23,42,.35); backdrop-filter:blur(3px); z-index:20
+  }
+  .modal.on{ display:flex }
+  .modal .sheet{ background:#fff; border-radius:18px; box-shadow:var(--shadow); max-width:520px; width:92%; padding:22px; text-align:center }
+  .sheet h3{ margin:0 0 8px } .sheet p{ margin:0 12px 12px; color:#6b7280 }
 </style>
 </head>
 <body>
@@ -145,14 +154,7 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
       <span class="stat">Time left: <strong id="timeLeft">60</strong>s</span>
       <span class="stat">Score: <strong id="score">0</strong></span>
       <span class="grow"></span>
-      <label class="stat">
-        Mode:
-        <select id="modeSelect">
-          <option value="normal">Normal</option>
-          <option value="hard">Hard</option>
-        </select>
-      </label>
-      <button id="changeNameBtn" class="ghost">Set / Change name</button>
+      <button id="changeNameBtn" class="ghost">Set / Change Name</button>
       <button id="endBtn" class="secondary">End</button>
     </div>
     <div class="timerWrap" style="margin-top:12px">
@@ -188,11 +190,18 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
   </main>
 </div>
 
-<!-- Start Overlay (Home) -->
+<!-- Home Overlay (choose mode & start) -->
 <div class="startOverlay" id="startOverlay">
   <div class="startCard">
     <h1>Surds Sprint</h1>
-    <p>Enter your name once (first visit), pick a mode, then race the clock.</p>
+    <p>Select a mode and hit Start. You only need to enter your name once.</p>
+    <div style="margin:12px 0 16px;">
+      <label style="font-weight:600; margin-right:8px;">Mode:</label>
+      <select id="modeSelect" style="padding:10px 12px; border-radius:12px; border:1px solid #e2e8f0;">
+        <option value="normal">Normal</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
     <div class="row" style="justify-content:center; margin-top:8px">
       <button id="openNameBtn" class="ghost">Set / Change Name</button>
       <button id="startBtn" class="bigStart">▶ Start</button>
@@ -201,13 +210,13 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
   </div>
 </div>
 
-<!-- Name modal (only shown on first visit or when you click "Set / Change Name") -->
-<div class="modal" id="nameModal" aria-modal="true" role="dialog" style="display:none;">
+<!-- Name modal (shown only first time, or when you click Set / Change) -->
+<div class="modal" id="nameModal" aria-modal="true" role="dialog">
   <div class="sheet">
     <h3>Your Player Name</h3>
-    <p>We’ll use this to save your high scores on this device.</p>
-    <div class="row">
-      <input id="nameInput" class="grow" placeholder="e.g., Duane"/>
+    <p>We use this to save high scores on this device.</p>
+    <div class="row" style="justify-content:center">
+      <input id="nameInput" class="grow" placeholder="e.g., Duane" style="max-width:320px"/>
       <button id="saveNameBtn">Save</button>
       <button id="cancelNameBtn" class="secondary">Cancel</button>
     </div>
@@ -216,7 +225,7 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
 
 <script>
 /* ===== CONFIG & KEYS ===== */
-const GAME_ID = 'surds-sprint-v9';
+const GAME_ID = 'surds-sprint-v10';
 const ROUND_SECONDS = 60;
 const KEY_NAME = `${GAME_ID}:name`;
 const KEY_BEST_NORMAL = `${GAME_ID}:best:normal`;
@@ -279,8 +288,8 @@ function soundSkip(){ tone(520,.06,'sine',0.04); setTimeout(()=>tone(620,.06,'si
 
 /* ===== UTILS ===== */
 function showNameModal(on=true){
-  nameModal.style.display = on ? 'flex' : 'none';
-  if (on) setTimeout(()=>nameInput.focus(),50);
+  nameModal.classList.toggle('on', on);
+  if (on) setTimeout(()=>nameInput.focus(), 50);
 }
 function currentMode(){ return modeSelect.value || 'normal'; }
 function renderHeader(){
@@ -402,7 +411,7 @@ function nextQuestion(){
 /* ===== START / END / SUBMIT FLOW ===== */
 function start(){
   if (running) return;
-  if (!loadName()){ showNameModal(true); return; } // only if truly no name saved
+  if (!loadName()){ showNameModal(true); return; } // Require name BEFORE starting
   running = true;
   score = 0;
   timeLeft = ROUND_SECONDS;
@@ -441,7 +450,7 @@ function end(){
     (isHigh ? ` <span class="ok"><strong>New ${mode} high score!</strong></span>` : '');
   questionEl.textContent = 'Press Start to play again.';
 
-  // Return to home screen (no name modal here)
+  // Return to home screen (NO name modal)
   startOverlay.style.display='flex';
   setTimeout(()=>startOverlay.classList.remove('off'),10);
   renderHeader();
@@ -520,10 +529,7 @@ resetBestBtn.onclick = ()=>{
     bestNormal = 0; bestHard = 0; saveBestNormal(0); saveBestHard(0); renderHeader();
   }
 };
-changeNameBtn.onclick = ()=> {
-  nameInput.value = loadName();
-  showNameModal(true);
-};
+changeNameBtn.onclick = ()=> { nameInput.value = loadName(); showNameModal(true); };
 openNameBtn.onclick   = changeNameBtn.onclick;
 modeSelect.onchange   = ()=> renderHeader();
 answerEl.addEventListener('keydown', e=>{ if (e.key === 'Enter') submit(); });
@@ -534,7 +540,7 @@ saveNameBtn.onclick = ()=>{
   if (!n){ alert('Please enter a name'); return; }
   saveName(n);
   renderHeader();
-  showNameModal(false); // IMPORTANT: do not start the game here
+  showNameModal(false); // Do NOT start the game
 };
 cancelNameBtn.onclick = ()=> showNameModal(false);
 
@@ -543,9 +549,11 @@ cancelNameBtn.onclick = ()=> showNameModal(false);
   bestNormal = loadBestNormal();
   bestHard   = loadBestHard();
   renderHeader();
-  // Always show home screen on load
+
+  // Always show the home overlay (mode + Start)
   startOverlay.style.display='flex';
-  // Only show name modal automatically on first ever visit (no name saved)
+
+  // Show name modal ONLY on first visit (no name yet)
   const existingName = loadName();
   if (!existingName){
     nameInput.value = '';
@@ -553,6 +561,7 @@ cancelNameBtn.onclick = ()=> showNameModal(false);
   } else {
     nameInput.value = existingName;
   }
+
   updateFormattedEcho('');
 })();
 </script>
