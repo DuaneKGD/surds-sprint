@@ -5,20 +5,21 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Surds Sprint — Duane Kamaragoda Tutoring</title>
 
-  <!-- Inline SVG favicon (you can replace later) -->
-  <link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="100%" height="100%" fill="%232563eb"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="140" fill="white">√</text></svg>'>
+  <!-- Inline SVG favicon (replace later if you want) -->
+  <link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="100%" height="100%" fill="%2323a559"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="140" fill="white">√</text></svg>'>
 
   <style>
     :root{
-      --bg1:#ecf2ff;
+      --bg1:#ecfdf5;    /* mint gradient */
       --bg2:#f8fafc;
       --card:#ffffff;
       --ink:#0f172a;
       --muted:#475569;
-      --brand:#2563eb;
-      --brand2:#06b6d4;
+      --brand:#22c55e;  /* green */
+      --brand2:#10b981; /* teal green */
       --ok:#16a34a;
       --bad:#dc2626;
+      --warn:#f59e0b;
       --shadow:0 12px 32px rgba(0,0,0,.10);
       --radius:20px;
     }
@@ -34,51 +35,61 @@
       background:linear-gradient(135deg,var(--brand),var(--brand2));
       color:#fff; border-radius:26px; padding:22px; box-shadow:var(--shadow)
     }
-    .hero h1{margin:0 0 8px; font-size:30px; letter-spacing:.2px}
-    .hero p{margin:0; opacity:.9}
+    .hero h1{margin:0 0 8px; font-size:32px; letter-spacing:.2px}
+    .hero p{margin:0; opacity:.92}
     .panel{margin-top:-14px; background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow)}
     .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
     .grow{flex:1}
-    .stat{background:#eef2f7; padding:8px 12px; border-radius:12px; font-size:14px}
-    input,button{
+    .stat{background:#eef2f7; padding:8px 12px; border-radius:12px; font-size:14px; white-space:nowrap}
+
+    input,button,select{
       font:inherit; padding:12px 14px; border-radius:12px; border:1px solid #e2e8f0; outline:none; transition:.15s
     }
-    input:focus{box-shadow:0 0 0 6px rgba(37,99,235,.18); border-color:#93c5fd}
-    button{border:0; background:var(--brand); color:#fff; cursor:pointer}
+    input:focus,select:focus{box-shadow:0 0 0 6px rgba(34,197,94,.18); border-color:#86efac}
+    button{border:0; background:#16a34a; color:#fff; cursor:pointer}
     button.secondary{background:#e5e7eb; color:#111}
     button.ghost{background:transparent; border:1px solid #cbd5e1; color:#111}
     button:disabled{opacity:.6; cursor:not-allowed}
+
+    .startBig{
+      background:linear-gradient(135deg,#16a34a,#22c55e);
+      font-weight:800; font-size:18px; padding:14px 20px; border-radius:14px;
+      box-shadow:0 10px 24px rgba(22,163,74,.25);
+    }
     .card{background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); margin-top:16px}
     .question{
-      font-size: clamp(28px, 5vw, 44px);
-      font-weight: 800; letter-spacing:.3px; margin:6px 0 6px;
-      animation: fadeIn .3s ease
+      font-size: clamp(32px, 6vw, 52px);
+      font-weight: 900; letter-spacing:.4px; margin:6px 0 6px;
+      animation: fadeIn .25s ease
     }
     .hint{color:#64748b; font-size:14px; margin-top:0}
     .feedback{min-height:28px; margin-top:10px}
-    .ok{color:var(--ok)} .bad{color:var(--bad)}
+    .ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:var(--warn)}
     .footer{color:#6b7280; font-size:12px; margin-top:18px; text-align:center}
 
-    /* Timer bar */
-    .timerWrap{background:#e2e8f0; border-radius:999px; overflow:hidden; height:14px}
+    /* Timer bar with spark */
+    .timerWrap{position:relative; background:#e2e8f0; border-radius:999px; overflow:hidden; height:16px}
     .timer{
-      height:100%; width:100%;
-      background:linear-gradient(90deg,#10b981,#22c55e); /* green initially */
+      position:absolute; left:0; top:0; height:100%; width:100%;
+      background:linear-gradient(90deg,#22c55e,#10b981); /* green initially */
       transition:width .25s linear, background .25s ease, box-shadow .25s ease
     }
-    .timer.warn{ background:linear-gradient(90deg,#f59e0b,#f97316);} /* orange */
+    .timer.warn{ background:linear-gradient(90deg,#f59e0b,#fb923c);} /* orange */
     .timer.danger{ background:linear-gradient(90deg,#ef4444,#dc2626); box-shadow:0 0 12px rgba(239,68,68,.45); }
-    @keyframes pulse {
-      0% { transform:scale(1); }
-      50%{ transform:scale(1.02); }
-      100%{ transform:scale(1); }
-    }
+    @keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.02)} 100%{transform:scale(1)} }
     .timer.flash{ animation:pulse .6s ease 1; }
+    .spark{
+      position:absolute; top:50%; transform:translate(0,-50%);
+      width:12px; height:12px; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #fff, #fde68a 35%, #f59e0b 70%, #f97316 100%);
+      box-shadow:0 0 10px #f59e0b, 0 0 20px #fb923c;
+      pointer-events:none;
+    }
 
     /* Score popups */
     .floatScore{
       position:absolute; pointer-events:none; left:50%; transform:translateX(-50%);
-      font-weight:800; font-size:28px; opacity:0; animation: floatUp .9s ease forwards
+      font-weight:900; font-size:30px; opacity:0; animation: floatUp .9s ease forwards
     }
     .floatScore.ok{ color:#22c55e; text-shadow:0 2px 6px rgba(34,197,94,.25) }
     .floatScore.bad{ color:#ef4444; text-shadow:0 2px 6px rgba(239,68,68,.25) }
@@ -88,10 +99,8 @@
       100%{ opacity:0; transform:translate(-50%, -40px) scale(1.05); }
     }
 
-    /* Enter pop */
     .pop{ animation: pop .18s ease }
     @keyframes pop{ 0%{transform:scale(.98)} 100%{transform:scale(1)} }
-
     @keyframes fadeIn{ from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none} }
 
     /* Modal */
@@ -102,6 +111,7 @@
     .modal.on{ display:flex }
     .modal .sheet{ background:#fff; border-radius:18px; box-shadow:var(--shadow); max-width:520px; width:92%; padding:22px }
     .sheet h3{ margin:0 0 8px } .sheet p{ margin:0 0 12px; color:#6b7280 }
+    .madeby{ font-size:12px; color:#e2e8f0; margin-top:8px }
   </style>
 </head>
 <body>
@@ -109,6 +119,7 @@
     <header class="hero">
       <h1>Surds Sprint</h1>
       <p>Simplify and rationalise surds as quickly as you can in <strong>60 seconds</strong>.</p>
+      <div class="madeby">Made by <strong>Duane Kamaragoda Tutoring</strong></div>
     </header>
 
     <section class="panel">
@@ -117,24 +128,38 @@
         <span class="stat">High score: <strong id="bestScore">0</strong></span>
         <span class="stat">Time left: <strong id="timeLeft">60</strong>s</span>
         <span class="stat">Score: <strong id="score">0</strong></span>
+
         <span class="grow"></span>
+
+        <label class="stat">
+          Mode:
+          <select id="modeSelect">
+            <option value="normal">Normal</option>
+            <option value="hard">Hard</option>
+          </select>
+        </label>
+
         <button id="muteBtn" class="ghost" aria-pressed="false">🔊 Sound</button>
         <button id="changeNameBtn" class="ghost">Change name</button>
-        <button id="startBtn">Start</button>
+        <button id="startBtn" class="startBig">▶ Start</button>
         <button id="endBtn" class="secondary">End</button>
       </div>
-      <div class="timerWrap" style="margin-top:12px">
+      <div class="timerWrap" style="margin-top:12px; position:relative">
         <div id="timerBar" class="timer" style="width:100%"></div>
+        <div id="spark" class="spark" style="left: 100%"></div>
+      </div>
+      <div class="hint" style="margin-top:8px;">
+        Scoring: <span class="ok"><strong>+20</strong></span> correct, <span class="bad"><strong>–10</strong></span> wrong, <span class="warn"><strong>–5</strong></span> skip.
       </div>
     </section>
 
     <main class="card">
-      <div class="question" id="question">Press <em>Start</em> to begin.</div>
-      <div class="hint">Answer in simplest surd form. You can type <code>sqrt</code> or use <code>√</code>. Skipping has no penalty.</div>
+      <div class="question" id="question">Enter your name to begin.</div>
+      <div class="hint">Answer in simplest surd form. You can type <code>sqrt</code> or use <code>√</code>. Skipping has a small penalty.</div>
       <div class="row" style="margin-top:14px">
         <input id="answer" class="grow" placeholder="Type your answer…" autocomplete="off"/>
         <button id="submitBtn">Submit</button>
-        <button id="skipBtn" class="secondary">Skip</button>
+        <button id="skipBtn" class="secondary">Skip (−5)</button>
         <button id="resetBestBtn" class="ghost">Reset High Score</button>
       </div>
       <div id="feedback" class="feedback"></div>
@@ -142,7 +167,7 @@
     </main>
   </div>
 
-  <!-- Name modal -->
+  <!-- Name modal (required before starting) -->
   <div class="modal" id="nameModal" aria-modal="true" role="dialog">
     <div class="sheet">
       <h3>Welcome!</h3>
@@ -152,22 +177,23 @@
         <button id="saveNameBtn">Save</button>
         <button id="cancelNameBtn" class="secondary">Cancel</button>
       </div>
+      <p class="hint" style="margin-top:10px;">You must set a name before you can play.</p>
     </div>
   </div>
 
   <script>
-    /* =======================
-       CONFIG & STORAGE KEYS
-    ======================= */
-    const GAME_ID = 'surds-sprint-v3';
+    /* ========= CONFIG & KEYS ========= */
+    const GAME_ID = 'surds-sprint-v4';
     const ROUND_SECONDS = 60;
     const KEY_NAME = `${GAME_ID}:name`;
-    const KEY_BEST = `${GAME_ID}:best`;
-    const START_NAME = 'Duane'; // default first-time name
+    const KEY_BEST_NORMAL = `${GAME_ID}:best:normal`;
+    const KEY_BEST_HARD   = `${GAME_ID}:best:hard`;
 
-    /* =======================
-       DOM
-    ======================= */
+    const SCORE_CORRECT = 20;
+    const SCORE_WRONG   = -10;
+    const SCORE_SKIP    = -5; // half of wrong penalty
+
+    /* ========= DOM ========= */
     const playerNameEl = document.getElementById('playerName');
     const bestScoreEl  = document.getElementById('bestScore');
     const timeLeftEl   = document.getElementById('timeLeft');
@@ -175,7 +201,9 @@
     const questionEl   = document.getElementById('question');
     const answerEl     = document.getElementById('answer');
     const feedbackEl   = document.getElementById('feedback');
+
     const timerBar     = document.getElementById('timerBar');
+    const spark        = document.getElementById('spark');
 
     const startBtn     = document.getElementById('startBtn');
     const endBtn       = document.getElementById('endBtn');
@@ -184,41 +212,39 @@
     const resetBestBtn = document.getElementById('resetBestBtn');
     const changeNameBtn= document.getElementById('changeNameBtn');
     const muteBtn      = document.getElementById('muteBtn');
+    const modeSelect   = document.getElementById('modeSelect');
 
     const nameModal    = document.getElementById('nameModal');
     const nameInput    = document.getElementById('nameInput');
     const saveNameBtn  = document.getElementById('saveNameBtn');
     const cancelNameBtn= document.getElementById('cancelNameBtn');
 
-    /* =======================
-       STATE
-    ======================= */
+    /* ========= STATE ========= */
     let running = false;
     let score = 0;
-    let best = 0;
+    let bestNormal = 0, bestHard = 0;
     let timeLeft = ROUND_SECONDS;
     let timerId = null;
     let currentQ = null;
-    let deck = []; // non-repeating questions for current game
+    let deck = []; // shuffled, non-repeating for the active mode
     let lastDangerPulseAt = Infinity;
     let muted = false;
     let audioCtx = null;
+    let beepInterval = null;
 
-    /* =======================
-       STORAGE
-    ======================= */
+    /* ========= STORAGE ========= */
     const loadName = () => localStorage.getItem(KEY_NAME) || '';
     const saveName = n => localStorage.setItem(KEY_NAME, n);
-    const loadBest = () => Number(localStorage.getItem(KEY_BEST) || 0);
-    const saveBest = v => localStorage.setItem(KEY_BEST, String(v));
+    const loadBestNormal = () => Number(localStorage.getItem(KEY_BEST_NORMAL) || 0);
+    const loadBestHard   = () => Number(localStorage.getItem(KEY_BEST_HARD) || 0);
+    const saveBestNormal = v => localStorage.setItem(KEY_BEST_NORMAL, String(v));
+    const saveBestHard   = v => localStorage.setItem(KEY_BEST_HARD, String(v));
 
-    /* =======================
-       AUDIO (Web Audio API)
-    ======================= */
+    /* ========= AUDIO ========= */
     function ensureAudio(){
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
-    function beep(freq=880, dur=0.12, type='sine', gain=0.04){
+    function beep(freq=880, dur=0.10, type='sine', gain=0.04){
       if (muted) return;
       ensureAudio();
       const osc = audioCtx.createOscillator();
@@ -228,41 +254,63 @@
       g.gain.value = gain;
       osc.connect(g); g.connect(audioCtx.destination);
       osc.start();
-      setTimeout(()=>{ osc.stop(); }, dur*1000);
+      setTimeout(()=>osc.stop(), dur*1000);
     }
     function chordOk(){
       if (muted) return;
       ensureAudio();
-      // small major chord
-      beep(784, .12, 'triangle', 0.05); // G5
-      setTimeout(()=>beep(988,.12,'triangle',0.04), 60); // B5
-      setTimeout(()=>beep(1175,.12,'triangle',0.04),110); // D6
+      beep(784,.10,'triangle',0.05);
+      setTimeout(()=>beep(988,.10,'triangle',0.04), 70);
+      setTimeout(()=>beep(1175,.10,'triangle',0.04),120);
     }
     function buzzBad(){
       if (muted) return;
       ensureAudio();
-      beep(220,.15,'square',0.05);
-      setTimeout(()=>beep(180,.15,'square',0.05),100);
+      beep(220,.12,'square',0.05);
+      setTimeout(()=>beep(180,.12,'square',0.05),90);
+    }
+    function startBeepLoop(){
+      stopBeepLoop();
+      if (muted) return;
+      ensureAudio();
+      // Beep rate accelerates as timeLeft decreases
+      const loop = ()=>{
+        if (!running) return;
+        let interval = 1000; // default 1s
+        if (timeLeft <= 20 && timeLeft > 10) interval = 500;
+        else if (timeLeft <= 10 && timeLeft > 5) interval = 350;
+        else if (timeLeft <= 5) interval = 220;
+        beep(700, 0.06, 'sine', 0.025);
+        beepInterval = setTimeout(loop, interval);
+      };
+      loop();
+    }
+    function stopBeepLoop(){
+      if (beepInterval){ clearTimeout(beepInterval); beepInterval = null; }
     }
 
-    /* =======================
-       UTILS
-    ======================= */
+    /* ========= UTILS ========= */
     function showModal(on=true){ nameModal.classList.toggle('on', on); if(on){ setTimeout(()=>nameInput.focus(),50);} }
+    function currentMode(){ return modeSelect.value || 'normal'; }
     function renderHeader(){
       playerNameEl.textContent = loadName() || '—';
-      bestScoreEl.textContent  = best;
       timeLeftEl.textContent   = timeLeft;
       scoreEl.textContent      = score;
+      bestScoreEl.textContent  = currentMode()==='normal' ? bestNormal : bestHard;
     }
     function setTimerBar(){
       const pct = Math.max(0, Math.min(100, 100 * (timeLeft / ROUND_SECONDS)));
       timerBar.style.width = pct + '%';
+
+      // spark at the bar edge
+      const wrapWidth = document.querySelector('.timerWrap').clientWidth;
+      const x = Math.max(8, Math.min(wrapWidth-8, (pct/100)*wrapWidth));
+      spark.style.left = `${x - 6}px`;
+
       timerBar.classList.remove('warn','danger');
       if (pct <= 35 && pct > 15) timerBar.classList.add('warn');
       if (pct <= 15) {
         timerBar.classList.add('danger');
-        // flash pulse roughly every 3 seconds near the end
         if (timeLeft < lastDangerPulseAt - 3){
           timerBar.classList.add('flash');
           setTimeout(()=>timerBar.classList.remove('flash'), 600);
@@ -293,13 +341,13 @@
       return Math.abs(a-b) < 1e-6;
     }
     function animateScoreTo(target){
-      const start = score;
+      const start = Number(scoreEl.textContent)||0;
       const diff = target - start;
       const dur = 300;
       const t0 = performance.now();
       function step(now){
         const p = Math.min(1, (now - t0)/dur);
-        const eased = p<.5 ? 2*p*p : 1 - Math.pow(-2*p+2,2)/2; // easeInOutQuad
+        const eased = p<.5 ? 2*p*p : 1 - Math.pow(-2*p+2,2)/2;
         scoreEl.textContent = Math.round(start + diff*eased);
         if (p < 1) requestAnimationFrame(step);
       }
@@ -311,43 +359,64 @@
       el.textContent = text;
       document.body.appendChild(el);
       const cardRect = document.querySelector('.card').getBoundingClientRect();
-      el.style.top = (cardRect.top + 16) + 'px';
+      el.style.top = (cardRect.top + 18) + 'px';
       setTimeout(()=> el.remove(), 1000);
     }
 
-    /* =======================
-       QUESTION BANK (non-repeating per game)
-       Easier focus: simple simplifications, like terms, basic rationalising.
-    ======================= */
-    const BANK_MASTER = [
-      // Simplify √n
+    /* ========= QUESTION BANKS ========= */
+    const BANK_NORMAL = [
+      // Simplify √n (easy)
       ['Simplify √8','2√2'],['Simplify √12','2√3'],['Simplify √18','3√2'],['Simplify √20','2√5'],
       ['Simplify √24','2√6'],['Simplify √27','3√3'],['Simplify √28','2√7'],['Simplify √32','4√2'],
       ['Simplify √45','3√5'],['Simplify √48','4√3'],['Simplify √50','5√2'],['Simplify √72','6√2'],
       ['Simplify √98','7√2'],['Simplify √75','5√3'],['Simplify √63','3√7'],['Simplify √80','4√5'],
-
-      // Combine like terms
+      // Like terms
       ['Simplify √2 + √2','2√2'],['Simplify 2√3 + √3','3√3'],['Simplify 3√5 - √5','2√5'],
       ['Simplify 4√2 - 3√2','√2'],['Simplify 5√7 + 2√7','7√7'],['Simplify 6√3 - 4√3','2√3'],
       ['Simplify √6 + √6 + √6','3√6'],['Simplify 2√10 - √10','√10'],
-
-      // Rationalise simple denominators
+      // Rationalise single √
       ['Rationalise 1/√2','√2/2'],['Rationalise 1/√3','√3/3'],['Rationalise 1/√5','√5/5'],
       ['Rationalise 2/√2','√2'],['Rationalise 3/√3','√3'],['Rationalise √3/√3','1'],
     ].map(([p,a])=>({p,a}));
 
-    function makeDeck(){
-      // shuffle a copy
-      const arr = BANK_MASTER.slice();
-      for (let i=arr.length-1;i>0;i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [arr[i],arr[j]] = [arr[j],arr[i]];
-      }
-      return arr;
-    }
+    const BANK_HARD = [
+      // Bigger simplifications
+      ['Simplify √200','10√2'],['Simplify √300','10√3'],['Simplify √245','7√5'],
+      ['Simplify √432','12√3'],['Simplify √500','10√5'],
+      // Combining with coefficients
+      ['Simplify 2√8 + 3√8','5√8'],['Simplify 4√12 - 2√12','2√12'],['Simplify 3√18 + √8','3√18+√8→ (9√2+2√2)=11√2','11√2'],
+      // (the previous line includes a guide; final canonical answer is the last element)
+      // Rationalising harder (binomials)
+      ['Rationalise 6/(√5+√2)','2(√5-√2)'],
+      ['Rationalise 4/(√3+√3)','?','2/√3'], // simplified: 4/(2√3)=2/√3 (could then rationalise to 2√3/3)
+      ['Rationalise 5/(√7-√2)','(5(√7+√2))/5','√7+√2'],
+      // Mixed forms
+      ['Simplify √12 + √27','2√3+3√3','5√3'],
+      ['Simplify 3√2 + 5√8','3√2+10√2','13√2'],
+      ['Simplify 4√18 - √8','12√2-2√2','10√2'],
+      // Squares/Products
+      ['Simplify (√3)^2','3'],['Simplify (2√5)^2','20'],['Simplify √2·√8','√16','4'],
+      // A couple of rationalised single surd refreshers
+      ['Rationalise 1/√6','√6/6'],['Rationalise 3/(2√2)','3√2/4'],
+    ].map(arr=>{
+      // support entries where we gave intermediate hints; canonical is last element
+      const p = arr[0]; const a = arr[arr.length-1];
+      return {p,a};
+    });
 
+    function shuffled(arr){
+      const a = arr.slice();
+      for (let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+      }
+      return a;
+    }
+    function makeDeck(mode){
+      return shuffled(mode==='hard' ? BANK_HARD : BANK_NORMAL);
+    }
     function nextQuestion(){
-      if (deck.length === 0) deck = makeDeck();
+      if (deck.length === 0) deck = makeDeck(currentMode());
       currentQ = deck.pop();
       questionEl.textContent = currentQ.p;
       questionEl.classList.add('pop');
@@ -357,39 +426,48 @@
       answerEl.focus();
     }
 
-    /* =======================
-       GAME FLOW
-    ======================= */
+    /* ========= GAME FLOW ========= */
     function start(){
       if (running) return;
-      if (!loadName()) { showModal(true); return; }
+      if (!loadName()){ showModal(true); return; }
       running = true;
-      score = 0; renderHeader();
-      timeLeft = ROUND_SECONDS; lastDangerPulseAt = Infinity;
+      score = 0;
+      timeLeft = ROUND_SECONDS;
+      lastDangerPulseAt = Infinity;
       timerBar.classList.remove('warn','danger','flash');
-      deck = makeDeck();
+      deck = makeDeck(currentMode());
       nextQuestion();
+      renderHeader();
       setTimerBar();
+      // timer
       timerId = setInterval(()=>{
         timeLeft--;
         timeLeftEl.textContent = timeLeft;
         setTimerBar();
         if (timeLeft <= 0) end();
       },1000);
+      // ticking beeps
+      startBeepLoop();
     }
 
     function end(){
       if (!running) return;
       running = false;
       clearInterval(timerId); timerId = null;
-      const msg = `Time! Final score: ${score}.`;
-      feedbackEl.innerHTML = msg;
-      if (score > best){
-        best = score; saveBest(best);
-        feedbackEl.innerHTML += ` <span class="ok"><strong>New high score!</strong></span>`;
-        chordOk();
+      stopBeepLoop();
+
+      const mode = currentMode();
+      let isHigh = false;
+      if (mode==='normal'){
+        if (score > bestNormal){ bestNormal = score; saveBestNormal(bestNormal); isHigh = true; }
+      } else {
+        if (score > bestHard){ bestHard = score; saveBestHard(bestHard); isHigh = true; }
       }
+      feedbackEl.innerHTML = `Time! Final score: <strong>${score}</strong>.` +
+        (isHigh ? ` <span class="ok"><strong>New ${mode} high score!</strong></span>` : '');
+      if (isHigh) chordOk();
       questionEl.textContent = 'Press Start to play again.';
+      renderHeader();
     }
 
     function submit(){
@@ -397,35 +475,36 @@
       const user = normalise(answerEl.value);
       const correct = normalise(currentQ.a);
       if (user === correct || approxEqual(user, correct)){
-        const newScore = score + 20;
-        floatScore('+20', true); chordOk();
+        const newScore = score + SCORE_CORRECT;
+        floatScore('+'+SCORE_CORRECT, true); chordOk();
         animateScoreTo(newScore); score = newScore;
         nextQuestion();
         feedbackEl.innerHTML = `<span class="ok">Nice! Keep going.</span>`;
       } else {
-        const newScore = Math.max(0, score - 10);
-        floatScore('-10', false); buzzBad();
+        const newScore = Math.max(0, score + SCORE_WRONG);
+        floatScore(String(SCORE_WRONG), false); buzzBad();
         animateScoreTo(newScore); score = newScore;
-        feedbackEl.innerHTML = `<span class="bad">Not quite — try again or skip.</span>`;
+        feedbackEl.innerHTML = `<span class="bad">Not quite — try again or skip (−5).</span>`;
       }
     }
 
     function skip(){
       if (!running) return;
+      const newScore = Math.max(0, score + SCORE_SKIP);
+      floatScore(String(SCORE_SKIP), false);
+      animateScoreTo(newScore); score = newScore;
       nextQuestion();
-      feedbackEl.textContent = '';
+      feedbackEl.innerHTML = `<span class="warn">Skipped — small penalty. Keep going!</span>`;
     }
 
-    /* =======================
-       EVENTS
-    ======================= */
+    /* ========= EVENTS ========= */
     startBtn.onclick = start;
-    endBtn.onclick = end;
-    submitBtn.onclick = submit;
-    skipBtn.onclick = skip;
+    endBtn.onclick   = end;
+    submitBtn.onclick= submit;
+    skipBtn.onclick  = skip;
     resetBestBtn.onclick = ()=>{
-      if (confirm('Reset high score on this device?')){
-        best = 0; saveBest(0); renderHeader();
+      if (confirm('Reset high scores on this device for both modes?')){
+        bestNormal = 0; bestHard = 0; saveBestNormal(0); saveBestHard(0); renderHeader();
       }
     };
     changeNameBtn.onclick = ()=> showModal(true);
@@ -434,6 +513,7 @@
       muteBtn.textContent = muted ? '🔇 Sound Off' : '🔊 Sound';
       muteBtn.setAttribute('aria-pressed', String(!muted));
     };
+    modeSelect.onchange = ()=> renderHeader();
 
     answerEl.addEventListener('keydown', e=>{
       if (e.key === 'Enter') submit();
@@ -449,15 +529,19 @@
     };
     cancelNameBtn.onclick = ()=> showModal(false);
 
-    /* =======================
-       INIT
-    ======================= */
+    /* ========= INIT ========= */
     (function init(){
-      best = loadBest();
-      if (!loadName()) saveName(START_NAME);
+      bestNormal = loadBestNormal();
+      bestHard   = loadBestHard();
       renderHeader();
-      // Prefill modal input with stored name (or default)
-      nameInput.value = loadName() || START_NAME;
+
+      // Force name entry if none set
+      const n = loadName();
+      if (!n){ showModal(true); }
+      else { nameInput.value = n; }
+
+      // keep best score display correct for current mode
+      renderHeader();
     })();
   </script>
 </body>
