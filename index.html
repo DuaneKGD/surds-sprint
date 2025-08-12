@@ -7,14 +7,11 @@
 
 <!-- MathJax for live math rendering -->
 <script>
-window.MathJax = {
-  tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]},
-  svg: {fontCache: 'global'}
-};
+window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'global'} };
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 
-<!-- Inline favicon (replace later with your own) -->
+<!-- Favicon -->
 <link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="100%" height="100%" fill="%2322c55e"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="140" fill="white">√</text></svg>'>
 
 <style>
@@ -30,9 +27,6 @@ window.MathJax = {
     color:var(--ink); background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 60%);
     overflow-x:hidden;
   }
-
-  /* Animated abstract “math waves” background */
-  #bgCanvas{position:fixed; inset:0; z-index:-1;}
 
   .container{max-width:980px;margin:0 auto;padding:20px}
   .hero{
@@ -73,11 +67,11 @@ window.MathJax = {
   .bigStart{
     margin-top:10px;
     background:linear-gradient(135deg,#16a34a,#22c55e);
-    font-weight:900; font-size:22px; padding:16px 28px; border-radius:18px;
+    font-weight:900; font-size:26px; padding:18px 34px; border-radius:18px;
     box-shadow:0 12px 28px rgba(22,163,74,.28);
   }
 
-  /* Gameplay header stats, timer */
+  /* Timer bar */
   .timerWrap{position:relative; background:#e2e8f0; border-radius:999px; overflow:hidden; height:16px}
   .timer{
     position:absolute; left:0; top:0; height:100%; width:100%;
@@ -88,6 +82,7 @@ window.MathJax = {
   .timer.danger{ background:linear-gradient(90deg,#ef4444,#dc2626); box-shadow:0 0 12px rgba(239,68,68,.45); }
   @keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.02)} 100%{transform:scale(1)} }
   .timer.flash{ animation:pulse .6s ease 1; }
+
   .spark{
     position:absolute; top:50%; transform:translate(-50%,-50%);
     width:14px; height:14px; border-radius:50%;
@@ -108,24 +103,12 @@ window.MathJax = {
     100%{ transform:translate(-50%,-50%) scale(1); opacity:.95 }
   }
 
-  /* Floating question card */
-  .floatCard{
-    background:#fff; border-radius:22px; box-shadow:var(--shadow);
-    padding:22px; margin-top:16px; position:relative;
-    animation: floatY 4s ease-in-out infinite;
-  }
-  @keyframes floatY{
-    0%{ transform:translateY(0) }
-    50%{ transform:translateY(-6px) }
-    100%{ transform:translateY(0) }
-  }
+  /* Question section (no floating animation now) */
   .question{
     font-size: clamp(34px, 6.2vw, 56px);
     font-weight: 900; letter-spacing:.4px; margin:6px 0 10px;
-    animation: fadeIn .25s ease
   }
   .hint{color:#64748b; font-size:14px; margin-top:0}
-  @keyframes fadeIn{ from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none} }
 
   /* Live formatted input display */
   .mathEcho{
@@ -136,11 +119,15 @@ window.MathJax = {
 
   /* Correct flash background */
   .correctFlash{
-    position:absolute; inset:0; border-radius:22px; pointer-events:none;
-    background: radial-gradient( circle at 50% 50%, rgba(34,197,94,.25), rgba(34,197,94,0) 55% );
+    position:relative;
+    margin-bottom:8px;
+  }
+  .correctFlash::before{
+    content:''; position:absolute; inset:-6px -6px; border-radius:18px; pointer-events:none;
+    background: radial-gradient( circle at 50% 50%, rgba(34,197,94,.22), rgba(34,197,94,0) 55% );
     opacity:0; transition: opacity .35s ease;
   }
-  .correctFlash.on{ opacity:1; }
+  .correctFlash.on::before{ opacity:1; }
 
   .feedback{min-height:28px; margin-top:10px}
   .ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:var(--warn)}
@@ -157,8 +144,6 @@ window.MathJax = {
 </style>
 </head>
 <body>
-
-<canvas id="bgCanvas"></canvas>
 
 <div class="container">
   <header class="hero">
@@ -194,9 +179,10 @@ window.MathJax = {
   </section>
 
   <main class="card">
-    <div class="floatCard" id="gameCard">
-      <div class="correctFlash" id="correctFlash"></div>
-      <div class="question" id="question">Press <em>Start</em> to begin.</div>
+    <div id="gameArea">
+      <div class="correctFlash" id="correctFlash">
+        <div class="question" id="question">Press <em>Start</em> to begin.</div>
+      </div>
       <div class="hint">Type your answer in simplest surd form. You can type <code>sqrt</code> or use <code>√</code>. Skipping has a small penalty.</div>
 
       <div class="mathEcho">
@@ -244,8 +230,8 @@ window.MathJax = {
 </div>
 
 <script>
-/* ================== CONFIG & KEYS ================== */
-const GAME_ID = 'surds-sprint-v7';
+/* ===== CONFIG & KEYS ===== */
+const GAME_ID = 'surds-sprint-v8';
 const ROUND_SECONDS = 60;
 const KEY_NAME = `${GAME_ID}:name`;
 const KEY_BEST_NORMAL = `${GAME_ID}:best:normal`;
@@ -253,7 +239,7 @@ const KEY_BEST_HARD   = `${GAME_ID}:best:hard`;
 
 const SCORE_CORRECT = 20, SCORE_WRONG = -10, SCORE_SKIP = -5;
 
-/* ================== DOM ================== */
+/* ===== DOM ===== */
 const playerNameEl = document.getElementById('playerName');
 const bestScoreEl  = document.getElementById('bestScore');
 const timeLeftEl   = document.getElementById('timeLeft');
@@ -278,14 +264,13 @@ const correctFlash = document.getElementById('correctFlash');
 const formattedMath= document.getElementById('formattedMath');
 const startOverlay = document.getElementById('startOverlay');
 const openNameBtn  = document.getElementById('openNameBtn');
-const gameCard     = document.getElementById('gameCard');
 
-/* ================== STATE ================== */
+/* ===== STATE ===== */
 let running = false, score = 0, bestNormal = 0, bestHard = 0;
 let timeLeft = ROUND_SECONDS, timerId = null, lastDangerPulseAt = Infinity;
 let currentQ = null, deck = [];
 
-/* ================== STORAGE ================== */
+/* ===== STORAGE ===== */
 const loadName = () => localStorage.getItem(KEY_NAME) || '';
 const saveName = n => localStorage.setItem(KEY_NAME, n);
 const loadBestNormal = () => Number(localStorage.getItem(KEY_BEST_NORMAL) || 0);
@@ -293,34 +278,21 @@ const loadBestHard   = () => Number(localStorage.getItem(KEY_BEST_HARD) || 0);
 const saveBestNormal = v => localStorage.setItem(KEY_BEST_NORMAL, String(v));
 const saveBestHard   = v => localStorage.setItem(KEY_BEST_HARD, String(v));
 
-/* ================== AUDIO (correct / wrong / skip) ================== */
+/* ===== AUDIO (correct / wrong / skip) ===== */
 let audioCtx = null;
-function ensureAudio(){
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-}
+function ensureAudio(){ if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
 function tone(freq=880, dur=0.10, type='sine', gain=0.05){
   ensureAudio();
-  const osc = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
+  const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
   osc.type = type; osc.frequency.value = freq; g.gain.value = gain;
   osc.connect(g); g.connect(audioCtx.destination);
   osc.start(); setTimeout(()=>osc.stop(), dur*1000);
 }
-function soundCorrect(){
-  tone(784,.10,'triangle',0.06);
-  setTimeout(()=>tone(988,.10,'triangle',0.05), 70);
-  setTimeout(()=>tone(1175,.12,'triangle',0.05),130);
-}
-function soundWrong(){
-  tone(220,.12,'square',0.06);
-  setTimeout(()=>tone(180,.12,'square',0.06),90);
-}
-function soundSkip(){
-  tone(520,.06,'sine',0.04);
-  setTimeout(()=>tone(620,.06,'sine',0.03),70);
-}
+function soundCorrect(){ tone(784,.10,'triangle',0.06); setTimeout(()=>tone(988,.10,'triangle',0.05),70); setTimeout(()=>tone(1175,.12,'triangle',0.05),130); }
+function soundWrong(){ tone(220,.12,'square',0.06); setTimeout(()=>tone(180,.12,'square',0.06),90); }
+function soundSkip(){ tone(520,.06,'sine',0.04); setTimeout(()=>tone(620,.06,'sine',0.03),70); }
 
-/* ================== UTILS ================== */
+/* ===== UTILS ===== */
 function showModal(on=true){ nameModal.classList.toggle('on', on); if(on){ setTimeout(()=>nameInput.focus(),50);} }
 function currentMode(){ return modeSelect.value || 'normal'; }
 function renderHeader(){
@@ -332,12 +304,10 @@ function renderHeader(){
 function setTimerBar(){
   const pct = Math.max(0, Math.min(100, 100 * (timeLeft / ROUND_SECONDS)));
   timerBar.style.width = pct + '%';
-
   const wrap = document.querySelector('.timerWrap');
   const wrapW = wrap.clientWidth;
   const x = Math.max(10, Math.min(wrapW-10, (pct/100)*wrapW));
   spark.style.left = `${x}px`;
-
   timerBar.classList.remove('warn','danger');
   if (pct <= 35 && pct > 15) timerBar.classList.add('warn');
   if (pct <= 15){
@@ -349,16 +319,11 @@ function setTimerBar(){
     }
   }
 }
-function normalise(s){
-  return s.replace(/\s+/g,'').replace(/sqrt/gi,'√').replace(/\*/g,'').toLowerCase();
-}
+function normalise(s){ return s.replace(/\s+/g,'').replace(/sqrt/gi,'√').replace(/\*/g,'').toLowerCase(); }
 function evalSurd(expr){
   try{
     let s = expr.replace(/\s+/g,'').replace(/√/g,'Math.sqrt').replace(/(\d)(Math\.sqrt)/g,'$1*$2');
-    if (s.includes('/')){
-      const [num,den] = s.split('/');
-      return (Function(`return (${num})/(${den})`))();
-    }
+    if (s.includes('/')){ const [num,den] = s.split('/'); return (Function(`return (${num})/(${den})`))(); }
     return (Function(`return (${s})`))();
   }catch{ return null; }
 }
@@ -387,8 +352,7 @@ function floatScore(text, ok=true){
   el.style.top = (cardRect.top + 18) + 'px';
   setTimeout(()=> el.remove(), 1000);
 }
-
-/* ===== Score popup styles (injected for brevity) ===== */
+/* Score popup styles (inject) */
 const stylePopup=document.createElement('style');
 stylePopup.textContent=`
 .floatScore{position:absolute;pointer-events:none;left:50%;transform:translateX(-50%);font-weight:900;font-size:30px;opacity:0;animation:floatUp .9s ease forwards}
@@ -398,7 +362,7 @@ stylePopup.textContent=`
 `;
 document.head.appendChild(stylePopup);
 
-/* ================== QUESTION BANKS ================== */
+/* ===== QUESTION BANKS ===== */
 const BANK_NORMAL = [
   ['Simplify √8','2√2'],['Simplify √12','2√3'],['Simplify √18','3√2'],['Simplify √20','2√5'],
   ['Simplify √24','2√6'],['Simplify √27','3√3'],['Simplify √28','2√7'],['Simplify √32','4√2'],
@@ -447,7 +411,7 @@ function nextQuestion(){
   answerEl.focus();
 }
 
-/* ================== START / END / SUBMIT FLOW ================== */
+/* ===== START / END / SUBMIT FLOW ===== */
 function start(){
   if (running) return;
   if (!loadName()){ showModal(true); return; }
@@ -461,7 +425,7 @@ function start(){
   renderHeader();
   setTimerBar();
 
-  // Smoothly dismiss start overlay
+  // Dismiss start overlay (only on explicit Start click)
   startOverlay.classList.add('off');
   setTimeout(()=> startOverlay.style.display='none', 520);
 
@@ -488,7 +452,8 @@ function end(){
   feedbackEl.innerHTML = `Time! Final score: <strong>${score}</strong>.` +
     (isHigh ? ` <span class="ok"><strong>New ${mode} high score!</strong></span>` : '');
   questionEl.textContent = 'Press Start to play again.';
-  // Show overlay again for a clean loop
+
+  // Show overlay again (not starting automatically)
   startOverlay.style.display='flex';
   setTimeout(()=>startOverlay.classList.remove('off'),10);
   renderHeader();
@@ -500,16 +465,14 @@ function submit(){
   const correct = normalise(currentQ.a);
   if (user === correct || approxEqual(user, correct)){
     const newScore = score + SCORE_CORRECT;
-    floatScore('+'+SCORE_CORRECT, true);
-    soundCorrect();
+    floatScore('+'+SCORE_CORRECT, true); soundCorrect();
     animateScoreTo(newScore); score = newScore;
     flashCorrect();
     nextQuestion();
     feedbackEl.innerHTML = `<span class="ok">Nice! Keep going.</span>`;
   } else {
     const newScore = Math.max(0, score + SCORE_WRONG);
-    floatScore(String(SCORE_WRONG), false);
-    soundWrong();
+    floatScore(String(SCORE_WRONG), false); soundWrong();
     animateScoreTo(newScore); score = newScore;
     feedbackEl.innerHTML = `<span class="bad">Not quite — try again or skip (−5).</span>`;
   }
@@ -518,8 +481,7 @@ function submit(){
 function skip(){
   if (!running) return;
   const newScore = Math.max(0, score + SCORE_SKIP);
-  floatScore(String(SCORE_SKIP), false);
-  soundSkip();
+  floatScore(String(SCORE_SKIP), false); soundSkip();
   animateScoreTo(newScore); score = newScore;
   nextQuestion();
   feedbackEl.innerHTML = `<span class="warn">Skipped — small penalty. Keep going!</span>`;
@@ -530,44 +492,25 @@ function flashCorrect(){
   setTimeout(()=>correctFlash.classList.remove('on'), 220);
 }
 
-/* ================== FORMATTED ECHO (MathJax) ================== */
-/* Converts user text to TeX for display only. */
+/* ===== FORMATTED ECHO (MathJax) ===== */
 function toTeX(raw){
   if (!raw) return '\\text{—}';
-  let s = raw;
+  let s = raw.replace(/sqrt/gi, '√');
 
-  // Normalise sqrt to √
-  s = s.replace(/sqrt/gi, '√');
-
-  // Handle fractions a/b (simple split on first slash not inside parentheses)
-  // We’ll convert only when pattern is simple number or surd over simple number/surd.
+  // Simple a/b fraction
   const fracMatch = s.match(/^([^\/]+)\/([^\/]+)$/);
   if (fracMatch){
     const num = fracMatch[1], den = fracMatch[2];
-    s = `\\frac{${ partToTeX(num) }}{${ partToTeX(den) }}`;
-    return s;
+    return `\\frac{${ partToTeX(num) }}{${ partToTeX(den) }}`;
   }
-
-  // Otherwise convert pieces with +, -, ·
-  // Replace dot operators
   s = s.replace(/·/g, '\\cdot ');
-
-  // Convert surds √X to \sqrt{X}
   s = s.replace(/√\(([^)]+)\)/g, (_,inner)=>`\\sqrt{${ partToTeX(inner) }}`);
   s = s.replace(/√(\d+(\.\d+)?)/g, (_,num)=>`\\sqrt{${num}}`);
-  // If any remaining √ followed by letters/numbers, wrap up to next operator
   s = s.replace(/√([a-zA-Z]+)/g, (_,sym)=>`\\sqrt{${sym}}`);
-
-  // Add thin spaces around + and - for readability
-  s = s.replace(/\+/g,'+').replace(/\-/g,'-');
-
-  // Implicit multiplication like 2\sqrt{3} is fine in TeX
-  // Return baseline TeX
   return s;
 }
 function partToTeX(part){
-  let p = part.trim();
-  p = p.replace(/sqrt/gi,'√');
+  let p = part.trim().replace(/sqrt/gi,'√');
   p = p.replace(/√\(([^)]+)\)/g, (_,inner)=>`\\sqrt{${ partToTeX(inner) }}`);
   p = p.replace(/√(\d+(\.\d+)?)/g, (_,num)=>`\\sqrt{${num}}`);
   p = p.replace(/·/g,'\\cdot ');
@@ -579,7 +522,7 @@ function updateFormattedEcho(raw){
   if (window.MathJax) MathJax.typesetPromise([formattedMath]);
 }
 
-/* ================== EVENTS ================== */
+/* ===== EVENTS ===== */
 startBtn.onclick = start;
 endBtn.onclick   = end;
 submitBtn.onclick= submit;
@@ -599,72 +542,19 @@ saveNameBtn.onclick = ()=>{
   const n = nameInput.value.trim();
   if (!n){ alert('Please enter a name'); return; }
   saveName(n);
-  showModal(false);
-  renderHeader();
-  answerEl.focus();
+  showModal(false);   // close modal only
+  renderHeader();     // DO NOT start the game
 };
 cancelNameBtn.onclick = ()=> showModal(false);
 
-/* ================== INIT ================== */
+/* ===== INIT ===== */
 (function init(){
   bestNormal = loadBestNormal();
   bestHard   = loadBestHard();
   renderHeader();
-  const n = loadName();
-  if (!n){
-    // show overlay, require name on first start press
-    startOverlay.style.display='flex';
-  } else {
-    nameInput.value = n;
-    startOverlay.style.display='flex';
-  }
-  // Initial formatted echo placeholder
+  // Always show start overlay on load; do NOT auto-start after naming
+  startOverlay.style.display='flex';
   updateFormattedEcho('');
-})();
-
-/* ================== Animated “math waves” background ================== */
-(function waves(){
-  const canvas = document.getElementById('bgCanvas');
-  const ctx = canvas.getContext('2d');
-  let w, h, t=0;
-  function resize(){
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  // Multiple layered sine waves
-  const layers = [
-    { amp: 18,  freq: 0.012, speed: 0.9,  color: 'rgba(34,197,94,0.10)'  },
-    { amp: 28,  freq: 0.009, speed: 0.6,  color: 'rgba(16,185,129,0.10)' },
-    { amp: 42,  freq: 0.006, speed: 0.45, color: 'rgba(15,23,42,0.07)'   }
-  ];
-  function draw(){
-    t += 1;
-    ctx.clearRect(0,0,w,h);
-
-    // soft gradient backdrop
-    const g = ctx.createLinearGradient(0,0,0,h);
-    g.addColorStop(0,'#f6fffb');
-    g.addColorStop(1,'#f8fafc');
-    ctx.fillStyle = g;
-    ctx.fillRect(0,0,w,h);
-
-    layers.forEach((L, i)=>{
-      ctx.beginPath();
-      for (let x=0; x<=w; x+=2){
-        const y = h*0.25 + i*h*0.2 + Math.sin(x*L.freq + t*0.02*L.speed)*L.amp;
-        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-      }
-      ctx.lineTo(w,h); ctx.lineTo(0,h); ctx.closePath();
-      ctx.fillStyle = L.color;
-      ctx.fill();
-    });
-
-    requestAnimationFrame(draw);
-  }
-  draw();
 })();
 </script>
 </body>
