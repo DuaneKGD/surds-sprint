@@ -5,43 +5,33 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Surds Sprint — Duane Kamaragoda Tutoring</title>
 
-  <!-- Inline SVG favicon (replace later if you want) -->
-  <link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="100%" height="100%" fill="%2323a559"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="140" fill="white">√</text></svg>'>
+  <!-- Simple inline favicon (replace with your own later if you like) -->
+  <link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="100%" height="100%" fill="%2322c55e"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="140" fill="white">√</text></svg>'>
 
   <style>
     :root{
-      --bg1:#ecfdf5;    /* mint gradient */
-      --bg2:#f8fafc;
-      --card:#ffffff;
-      --ink:#0f172a;
-      --muted:#475569;
-      --brand:#22c55e;  /* green */
-      --brand2:#10b981; /* teal green */
-      --ok:#16a34a;
-      --bad:#dc2626;
-      --warn:#f59e0b;
-      --shadow:0 12px 32px rgba(0,0,0,.10);
-      --radius:20px;
+      --bg1:#ecfdf5; --bg2:#f8fafc; --card:#fff; --ink:#0f172a; --muted:#475569;
+      --brand:#22c55e; --brand2:#10b981; --ok:#16a34a; --bad:#dc2626; --warn:#f59e0b;
+      --shadow:0 12px 32px rgba(0,0,0,.10); --radius:20px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      color:var(--ink);
-      background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 60%);
+      color:var(--ink); background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 60%);
     }
     .container{max-width:980px;margin:0 auto;padding:20px}
     .hero{
       background:linear-gradient(135deg,var(--brand),var(--brand2));
       color:#fff; border-radius:26px; padding:22px; box-shadow:var(--shadow)
     }
-    .hero h1{margin:0 0 8px; font-size:32px; letter-spacing:.2px}
+    .hero h1{margin:0 0 8px; font-size:32px}
     .hero p{margin:0; opacity:.92}
+    .madeby{ font-size:12px; color:#e2e8f0; margin-top:8px }
     .panel{margin-top:-14px; background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow)}
     .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
     .grow{flex:1}
     .stat{background:#eef2f7; padding:8px 12px; border-radius:12px; font-size:14px; white-space:nowrap}
-
     input,button,select{
       font:inherit; padding:12px 14px; border-radius:12px; border:1px solid #e2e8f0; outline:none; transition:.15s
     }
@@ -50,7 +40,6 @@
     button.secondary{background:#e5e7eb; color:#111}
     button.ghost{background:transparent; border:1px solid #cbd5e1; color:#111}
     button:disabled{opacity:.6; cursor:not-allowed}
-
     .startBig{
       background:linear-gradient(135deg,#16a34a,#22c55e);
       font-weight:800; font-size:18px; padding:14px 20px; border-radius:14px;
@@ -67,7 +56,7 @@
     .ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:var(--warn)}
     .footer{color:#6b7280; font-size:12px; margin-top:18px; text-align:center}
 
-    /* Timer bar with spark */
+    /* Timer bar with animated comet spark */
     .timerWrap{position:relative; background:#e2e8f0; border-radius:999px; overflow:hidden; height:16px}
     .timer{
       position:absolute; left:0; top:0; height:100%; width:100%;
@@ -78,12 +67,25 @@
     .timer.danger{ background:linear-gradient(90deg,#ef4444,#dc2626); box-shadow:0 0 12px rgba(239,68,68,.45); }
     @keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.02)} 100%{transform:scale(1)} }
     .timer.flash{ animation:pulse .6s ease 1; }
+
     .spark{
-      position:absolute; top:50%; transform:translate(0,-50%);
-      width:12px; height:12px; border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, #fff, #fde68a 35%, #f59e0b 70%, #f97316 100%);
-      box-shadow:0 0 10px #f59e0b, 0 0 20px #fb923c;
+      position:absolute; top:50%; transform:translate(-50%,-50%);
+      width:14px; height:14px; border-radius:50%;
+      background: radial-gradient(circle at 35% 35%, #fff, #fde68a 40%, #f59e0b 70%, #f97316 100%);
+      box-shadow:0 0 12px #f59e0b, 0 0 22px #fb923c, 0 0 34px rgba(249,115,22,.5);
       pointer-events:none;
+      animation: flicker .9s infinite ease-in-out;
+    }
+    .spark::after{
+      content:''; position:absolute; right:50%; top:50%; transform:translate(0,-50%);
+      width:110px; height:6px; border-radius:6px;
+      background: linear-gradient(90deg, rgba(249,115,22,.0) 0%, rgba(249,115,22,.35) 60%, rgba(249,115,22,.0) 100%);
+      filter: blur(1px);
+    }
+    @keyframes flicker{
+      0%{ transform:translate(-50%,-50%) scale(1); opacity:.95 }
+      50%{ transform:translate(-50%,-50%) scale(1.08); opacity:.85 }
+      100%{ transform:translate(-50%,-50%) scale(1); opacity:.95 }
     }
 
     /* Score popups */
@@ -111,7 +113,6 @@
     .modal.on{ display:flex }
     .modal .sheet{ background:#fff; border-radius:18px; box-shadow:var(--shadow); max-width:520px; width:92%; padding:22px }
     .sheet h3{ margin:0 0 8px } .sheet p{ margin:0 0 12px; color:#6b7280 }
-    .madeby{ font-size:12px; color:#e2e8f0; margin-top:8px }
   </style>
 </head>
 <body>
@@ -128,9 +129,7 @@
         <span class="stat">High score: <strong id="bestScore">0</strong></span>
         <span class="stat">Time left: <strong id="timeLeft">60</strong>s</span>
         <span class="stat">Score: <strong id="score">0</strong></span>
-
         <span class="grow"></span>
-
         <label class="stat">
           Mode:
           <select id="modeSelect">
@@ -138,13 +137,11 @@
             <option value="hard">Hard</option>
           </select>
         </label>
-
-        <button id="muteBtn" class="ghost" aria-pressed="false">🔊 Sound</button>
         <button id="changeNameBtn" class="ghost">Change name</button>
         <button id="startBtn" class="startBig">▶ Start</button>
         <button id="endBtn" class="secondary">End</button>
       </div>
-      <div class="timerWrap" style="margin-top:12px; position:relative">
+      <div class="timerWrap" style="margin-top:12px">
         <div id="timerBar" class="timer" style="width:100%"></div>
         <div id="spark" class="spark" style="left: 100%"></div>
       </div>
@@ -154,7 +151,7 @@
     </section>
 
     <main class="card">
-      <div class="question" id="question">Enter your name to begin.</div>
+      <div class="question" id="question">Press <em>Start</em> to begin.</div>
       <div class="hint">Answer in simplest surd form. You can type <code>sqrt</code> or use <code>√</code>. Skipping has a small penalty.</div>
       <div class="row" style="margin-top:14px">
         <input id="answer" class="grow" placeholder="Type your answer…" autocomplete="off"/>
@@ -167,7 +164,7 @@
     </main>
   </div>
 
-  <!-- Name modal (required before starting) -->
+  <!-- Name modal (required before starting if not set) -->
   <div class="modal" id="nameModal" aria-modal="true" role="dialog">
     <div class="sheet">
       <h3>Welcome!</h3>
@@ -182,18 +179,16 @@
   </div>
 
   <script>
-    /* ========= CONFIG & KEYS ========= */
-    const GAME_ID = 'surds-sprint-v4';
+    /* ===== CONFIG & STORAGE KEYS ===== */
+    const GAME_ID = 'surds-sprint-v5';
     const ROUND_SECONDS = 60;
     const KEY_NAME = `${GAME_ID}:name`;
     const KEY_BEST_NORMAL = `${GAME_ID}:best:normal`;
     const KEY_BEST_HARD   = `${GAME_ID}:best:hard`;
 
-    const SCORE_CORRECT = 20;
-    const SCORE_WRONG   = -10;
-    const SCORE_SKIP    = -5; // half of wrong penalty
+    const SCORE_CORRECT = 20, SCORE_WRONG = -10, SCORE_SKIP = -5;
 
-    /* ========= DOM ========= */
+    /* ===== DOM ===== */
     const playerNameEl = document.getElementById('playerName');
     const bestScoreEl  = document.getElementById('bestScore');
     const timeLeftEl   = document.getElementById('timeLeft');
@@ -201,38 +196,26 @@
     const questionEl   = document.getElementById('question');
     const answerEl     = document.getElementById('answer');
     const feedbackEl   = document.getElementById('feedback');
-
     const timerBar     = document.getElementById('timerBar');
     const spark        = document.getElementById('spark');
-
     const startBtn     = document.getElementById('startBtn');
     const endBtn       = document.getElementById('endBtn');
     const submitBtn    = document.getElementById('submitBtn');
     const skipBtn      = document.getElementById('skipBtn');
     const resetBestBtn = document.getElementById('resetBestBtn');
     const changeNameBtn= document.getElementById('changeNameBtn');
-    const muteBtn      = document.getElementById('muteBtn');
     const modeSelect   = document.getElementById('modeSelect');
-
     const nameModal    = document.getElementById('nameModal');
     const nameInput    = document.getElementById('nameInput');
     const saveNameBtn  = document.getElementById('saveNameBtn');
     const cancelNameBtn= document.getElementById('cancelNameBtn');
 
-    /* ========= STATE ========= */
-    let running = false;
-    let score = 0;
-    let bestNormal = 0, bestHard = 0;
-    let timeLeft = ROUND_SECONDS;
-    let timerId = null;
-    let currentQ = null;
-    let deck = []; // shuffled, non-repeating for the active mode
-    let lastDangerPulseAt = Infinity;
-    let muted = false;
-    let audioCtx = null;
-    let beepInterval = null;
+    /* ===== STATE ===== */
+    let running = false, score = 0, bestNormal = 0, bestHard = 0;
+    let timeLeft = ROUND_SECONDS, timerId = null, lastDangerPulseAt = Infinity;
+    let currentQ = null, deck = [];
 
-    /* ========= STORAGE ========= */
+    /* ===== STORAGE ===== */
     const loadName = () => localStorage.getItem(KEY_NAME) || '';
     const saveName = n => localStorage.setItem(KEY_NAME, n);
     const loadBestNormal = () => Number(localStorage.getItem(KEY_BEST_NORMAL) || 0);
@@ -240,56 +223,7 @@
     const saveBestNormal = v => localStorage.setItem(KEY_BEST_NORMAL, String(v));
     const saveBestHard   = v => localStorage.setItem(KEY_BEST_HARD, String(v));
 
-    /* ========= AUDIO ========= */
-    function ensureAudio(){
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    function beep(freq=880, dur=0.10, type='sine', gain=0.04){
-      if (muted) return;
-      ensureAudio();
-      const osc = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      osc.type = type;
-      osc.frequency.value = freq;
-      g.gain.value = gain;
-      osc.connect(g); g.connect(audioCtx.destination);
-      osc.start();
-      setTimeout(()=>osc.stop(), dur*1000);
-    }
-    function chordOk(){
-      if (muted) return;
-      ensureAudio();
-      beep(784,.10,'triangle',0.05);
-      setTimeout(()=>beep(988,.10,'triangle',0.04), 70);
-      setTimeout(()=>beep(1175,.10,'triangle',0.04),120);
-    }
-    function buzzBad(){
-      if (muted) return;
-      ensureAudio();
-      beep(220,.12,'square',0.05);
-      setTimeout(()=>beep(180,.12,'square',0.05),90);
-    }
-    function startBeepLoop(){
-      stopBeepLoop();
-      if (muted) return;
-      ensureAudio();
-      // Beep rate accelerates as timeLeft decreases
-      const loop = ()=>{
-        if (!running) return;
-        let interval = 1000; // default 1s
-        if (timeLeft <= 20 && timeLeft > 10) interval = 500;
-        else if (timeLeft <= 10 && timeLeft > 5) interval = 350;
-        else if (timeLeft <= 5) interval = 220;
-        beep(700, 0.06, 'sine', 0.025);
-        beepInterval = setTimeout(loop, interval);
-      };
-      loop();
-    }
-    function stopBeepLoop(){
-      if (beepInterval){ clearTimeout(beepInterval); beepInterval = null; }
-    }
-
-    /* ========= UTILS ========= */
+    /* ===== UTILS ===== */
     function showModal(on=true){ nameModal.classList.toggle('on', on); if(on){ setTimeout(()=>nameInput.focus(),50);} }
     function currentMode(){ return modeSelect.value || 'normal'; }
     function renderHeader(){
@@ -302,14 +236,15 @@
       const pct = Math.max(0, Math.min(100, 100 * (timeLeft / ROUND_SECONDS)));
       timerBar.style.width = pct + '%';
 
-      // spark at the bar edge
-      const wrapWidth = document.querySelector('.timerWrap').clientWidth;
-      const x = Math.max(8, Math.min(wrapWidth-8, (pct/100)*wrapWidth));
-      spark.style.left = `${x - 6}px`;
+      // Move the comet spark along the edge of the bar (and constrain inside wrap)
+      const wrap = document.querySelector('.timerWrap');
+      const wrapW = wrap.clientWidth;
+      const x = Math.max(10, Math.min(wrapW-10, (pct/100)*wrapW));
+      spark.style.left = `${x}px`;
 
       timerBar.classList.remove('warn','danger');
       if (pct <= 35 && pct > 15) timerBar.classList.add('warn');
-      if (pct <= 15) {
+      if (pct <= 15){
         timerBar.classList.add('danger');
         if (timeLeft < lastDangerPulseAt - 3){
           timerBar.classList.add('flash');
@@ -319,11 +254,7 @@
       }
     }
     function normalise(s){
-      return s
-        .replace(/\s+/g,'')
-        .replace(/sqrt/gi,'√')
-        .replace(/\*/g,'')
-        .toLowerCase();
+      return s.replace(/\s+/g,'').replace(/sqrt/gi,'√').replace(/\*/g,'').toLowerCase();
     }
     function evalSurd(expr){
       try{
@@ -342,9 +273,7 @@
     }
     function animateScoreTo(target){
       const start = Number(scoreEl.textContent)||0;
-      const diff = target - start;
-      const dur = 300;
-      const t0 = performance.now();
+      const diff = target - start, dur = 300, t0 = performance.now();
       function step(now){
         const p = Math.min(1, (now - t0)/dur);
         const eased = p<.5 ? 2*p*p : 1 - Math.pow(-2*p+2,2)/2;
@@ -363,7 +292,7 @@
       setTimeout(()=> el.remove(), 1000);
     }
 
-    /* ========= QUESTION BANKS ========= */
+    /* ===== QUESTION BANKS ===== */
     const BANK_NORMAL = [
       // Simplify √n (easy)
       ['Simplify √8','2√2'],['Simplify √12','2√3'],['Simplify √18','3√2'],['Simplify √20','2√5'],
@@ -383,26 +312,21 @@
       // Bigger simplifications
       ['Simplify √200','10√2'],['Simplify √300','10√3'],['Simplify √245','7√5'],
       ['Simplify √432','12√3'],['Simplify √500','10√5'],
-      // Combining with coefficients
-      ['Simplify 2√8 + 3√8','5√8'],['Simplify 4√12 - 2√12','2√12'],['Simplify 3√18 + √8','3√18+√8→ (9√2+2√2)=11√2','11√2'],
-      // (the previous line includes a guide; final canonical answer is the last element)
-      // Rationalising harder (binomials)
+      // Combine after simplifying
+      ['Simplify 2√8 + 3√8','10√2'],   // 2*2√2 + 3*2√2 = (4+6)√2
+      ['Simplify 4√12 - 2√12','4√3'],  // 4*2√3 - 2*2√3 = 8√3 - 4√3
+      ['Simplify 3√18 + √8','11√2'],   // 3*3√2 + 2√2
+      ['Simplify √12 + √27','5√3'],    // 2√3 + 3√3
+      ['Simplify 3√2 + 5√8','13√2'],   // 5√8=10√2
+      ['Simplify 4√18 - √8','10√2'],   // 4*3√2 - 2√2
+      // Square/product
+      ['Simplify (√3)^2','3'],['Simplify (2√5)^2','20'],['Simplify √2·√8','4'],
+      // Rationalising (binomials / scaled)
       ['Rationalise 6/(√5+√2)','2(√5-√2)'],
-      ['Rationalise 4/(√3+√3)','?','2/√3'], // simplified: 4/(2√3)=2/√3 (could then rationalise to 2√3/3)
-      ['Rationalise 5/(√7-√2)','(5(√7+√2))/5','√7+√2'],
-      // Mixed forms
-      ['Simplify √12 + √27','2√3+3√3','5√3'],
-      ['Simplify 3√2 + 5√8','3√2+10√2','13√2'],
-      ['Simplify 4√18 - √8','12√2-2√2','10√2'],
-      // Squares/Products
-      ['Simplify (√3)^2','3'],['Simplify (2√5)^2','20'],['Simplify √2·√8','√16','4'],
-      // A couple of rationalised single surd refreshers
-      ['Rationalise 1/√6','√6/6'],['Rationalise 3/(2√2)','3√2/4'],
-    ].map(arr=>{
-      // support entries where we gave intermediate hints; canonical is last element
-      const p = arr[0]; const a = arr[arr.length-1];
-      return {p,a};
-    });
+      ['Rationalise 3/(2√2)','3√2/4'],
+      ['Rationalise 5/(√7-√2)','√7+√2'],
+      ['Rationalise 1/√6','√6/6'],
+    ].map(([p,a])=>({p,a}));
 
     function shuffled(arr){
       const a = arr.slice();
@@ -426,7 +350,7 @@
       answerEl.focus();
     }
 
-    /* ========= GAME FLOW ========= */
+    /* ===== GAME FLOW ===== */
     function start(){
       if (running) return;
       if (!loadName()){ showModal(true); return; }
@@ -439,22 +363,18 @@
       nextQuestion();
       renderHeader();
       setTimerBar();
-      // timer
       timerId = setInterval(()=>{
         timeLeft--;
         timeLeftEl.textContent = timeLeft;
         setTimerBar();
         if (timeLeft <= 0) end();
       },1000);
-      // ticking beeps
-      startBeepLoop();
     }
 
     function end(){
       if (!running) return;
       running = false;
       clearInterval(timerId); timerId = null;
-      stopBeepLoop();
 
       const mode = currentMode();
       let isHigh = false;
@@ -465,7 +385,6 @@
       }
       feedbackEl.innerHTML = `Time! Final score: <strong>${score}</strong>.` +
         (isHigh ? ` <span class="ok"><strong>New ${mode} high score!</strong></span>` : '');
-      if (isHigh) chordOk();
       questionEl.textContent = 'Press Start to play again.';
       renderHeader();
     }
@@ -476,13 +395,13 @@
       const correct = normalise(currentQ.a);
       if (user === correct || approxEqual(user, correct)){
         const newScore = score + SCORE_CORRECT;
-        floatScore('+'+SCORE_CORRECT, true); chordOk();
+        floatScore('+'+SCORE_CORRECT, true);
         animateScoreTo(newScore); score = newScore;
         nextQuestion();
         feedbackEl.innerHTML = `<span class="ok">Nice! Keep going.</span>`;
       } else {
         const newScore = Math.max(0, score + SCORE_WRONG);
-        floatScore(String(SCORE_WRONG), false); buzzBad();
+        floatScore(String(SCORE_WRONG), false);
         animateScoreTo(newScore); score = newScore;
         feedbackEl.innerHTML = `<span class="bad">Not quite — try again or skip (−5).</span>`;
       }
@@ -497,7 +416,7 @@
       feedbackEl.innerHTML = `<span class="warn">Skipped — small penalty. Keep going!</span>`;
     }
 
-    /* ========= EVENTS ========= */
+    /* ===== EVENTS ===== */
     startBtn.onclick = start;
     endBtn.onclick   = end;
     submitBtn.onclick= submit;
@@ -508,40 +427,29 @@
       }
     };
     changeNameBtn.onclick = ()=> showModal(true);
-    muteBtn.onclick = ()=>{
-      muted = !muted;
-      muteBtn.textContent = muted ? '🔇 Sound Off' : '🔊 Sound';
-      muteBtn.setAttribute('aria-pressed', String(!muted));
-    };
     modeSelect.onchange = ()=> renderHeader();
-
-    answerEl.addEventListener('keydown', e=>{
-      if (e.key === 'Enter') submit();
-    });
+    answerEl.addEventListener('keydown', e=>{ if (e.key === 'Enter') submit(); });
 
     saveNameBtn.onclick = ()=>{
       const n = nameInput.value.trim();
       if (!n){ alert('Please enter a name'); return; }
       saveName(n);
       showModal(false);
+      // After saving, ensure the main prompt makes sense:
+      questionEl.textContent = 'Press Start to begin.';
       renderHeader();
       answerEl.focus();
     };
     cancelNameBtn.onclick = ()=> showModal(false);
 
-    /* ========= INIT ========= */
+    /* ===== INIT ===== */
     (function init(){
       bestNormal = loadBestNormal();
       bestHard   = loadBestHard();
       renderHeader();
-
-      // Force name entry if none set
       const n = loadName();
-      if (!n){ showModal(true); }
-      else { nameInput.value = n; }
-
-      // keep best score display correct for current mode
-      renderHeader();
+      if (!n){ showModal(true); } // will ask for name only if none saved
+      else { nameInput.value = n; questionEl.textContent = 'Press Start to begin.'; }
     })();
   </script>
 </body>
