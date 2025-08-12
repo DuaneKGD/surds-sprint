@@ -2,130 +2,202 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Surds Sprint</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Surds Sprint — Duane Kamaragoda Tutoring</title>
+
+  <!-- Favicon (replace href with your own file path later) -->
+  <link rel="icon" type="image/png" href="favicon.png">
+
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-         margin:0; padding:24px; background:#f7fafc; color:#111}
-    .card{max-width:680px; margin:0 auto; background:#fff; border-radius:16px;
-          box-shadow:0 8px 24px rgba(0,0,0,.08); padding:24px}
-    h1{margin:0 0 8px}
-    .meta{color:#555; margin:0 0 16px}
-    .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
-    input,button{font-size:16px; padding:10px 12px; border-radius:10px; border:1px solid #ddd}
-    button{border:0; background:#2563eb; color:#fff; cursor:pointer}
-    button.secondary{background:#e5e7eb; color:#111}
-    .stat{display:inline-block; background:#f1f5f9; padding:6px 10px; border-radius:8px; margin-right:8px}
-    .question{font-size:22px; margin:18px 0}
-    .answer{width:160px}
-    .hidden{display:none}
-    .ok{color:#059669}
-    .bad{color:#dc2626}
+    :root{
+      --bg:#f7fafc;
+      --card:#ffffff;
+      --ink:#0f172a;
+      --muted:#64748b;
+      --brand:#2563eb;        /* primary blue */
+      --brand-2:#06b6d4;      /* accent teal */
+      --ok:#16a34a;
+      --bad:#dc2626;
+      --ring:rgba(37,99,235,.25);
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:linear-gradient(180deg, #ecf2ff 0%, #f7fafc 60%);
+      color:var(--ink);
+    }
+    .container{max-width:960px;margin:0 auto;padding:24px}
+    .hero{
+      background:linear-gradient(135deg,var(--brand),var(--brand-2));
+      color:#fff;border-radius:24px;padding:24px;box-shadow:var(--shadow)
+    }
+    .hero h1{margin:0 0 6px;font-size:28px;letter-spacing:.3px}
+    .hero p{margin:0;color:#e6f2ff}
+    .panel{margin-top:-14px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .stat{background:#f1f5f9;padding:8px 12px;border-radius:12px;font-size:14px}
+    .grow{flex:1}
+    input,button{
+      font:inherit;border-radius:12px;border:1px solid #e5e7eb;padding:11px 12px;
+      transition:.15s; outline:none
+    }
+    input:focus{box-shadow:0 0 0 5px var(--ring);border-color:var(--brand)}
+    button{border:0;background:var(--brand);color:#fff;cursor:pointer}
+    button.secondary{background:#e5e7eb;color:#111}
+    button.ghost{background:transparent;border:1px solid #cbd5e1;color:#111}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+    .question{font-size:24px;margin:8px 0 14px}
+    .hint{color:var(--muted);font-size:14px;margin-top:-6px}
+    .feedback{min-height:24px;margin-top:8px}
+    .ok{color:var(--ok)} .bad{color:var(--bad)}
+    .footer{color:var(--muted);font-size:12px;margin-top:18px;text-align:center}
+
+    /* Timer bar */
+    .timerWrap{background:#e2e8f0;border-radius:999px;overflow:hidden;height:12px}
+    .timer{height:100%;width:100%;background:linear-gradient(90deg,var(--brand),var(--brand-2));transition:width .25s linear}
+
+    /* Modal for name setup */
+    .modal{
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+      background:rgba(15,23,42,.35);backdrop-filter:blur(3px);z-index:20
+    }
+    .modal.on{display:flex}
+    .modal .sheet{background:#fff;border-radius:18px;box-shadow:var(--shadow);max-width:520px;width:92%;padding:22px}
+    .sheet h3{margin:0 0 8px}
+    .sheet p{margin:0 0 12px;color:var(--muted)}
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Surds Sprint</h1>
-    <p class="meta">Solve as many as you can in 60 seconds.</p>
+  <div class="container">
+    <header class="hero">
+      <h1>Surds Sprint</h1>
+      <p>Simplify and rationalise surds as quickly as you can in <strong>2 minutes</strong>.</p>
+    </header>
 
-    <div class="row" id="nameRow">
-      <input id="nameInput" placeholder="Enter your name" />
-      <button id="saveNameBtn">Save Name</button>
-      <button class="secondary" id="clearNameBtn">Clear</button>
-    </div>
-
-    <p>
-      <span class="stat">Player: <strong id="playerName">—</strong></span>
-      <span class="stat">High score: <strong id="bestScore">0</strong></span>
-      <span class="stat">Time: <strong id="timeLeft">60</strong>s</span>
-      <span class="stat">Score: <strong id="score">0</strong></span>
-    </p>
-
-    <div id="gameArea">
-      <div class="question" id="question">Press Start to begin</div>
+    <section class="panel">
       <div class="row">
-        <input id="answer" class="answer" placeholder="Your answer" />
-        <button id="submitBtn">Submit</button>
+        <span class="stat">Player: <strong id="playerName">—</strong></span>
+        <span class="stat">High score: <strong id="bestScore">0</strong></span>
+        <span class="stat">Time left: <strong id="timeLeft">120</strong>s</span>
+        <span class="stat">Score: <strong id="score">0</strong></span>
+        <span class="grow"></span>
+        <button id="changeNameBtn" class="ghost">Change name</button>
         <button id="startBtn">Start</button>
-        <button class="secondary" id="resetBtn">Reset High Score</button>
+        <button id="endBtn" class="secondary">End</button>
       </div>
-      <p id="feedback"></p>
+      <div class="timerWrap" style="margin-top:12px">
+        <div id="timerBar" class="timer" style="width:100%"></div>
+      </div>
+    </section>
+
+    <main class="card" style="margin-top:16px">
+      <div class="question" id="question">Press <em>Start</em> to begin.</div>
+      <div class="hint">Answer in simplest surd form (you can type <code>sqrt</code> or use <code>√</code>).</div>
+      <div class="row" style="margin-top:14px">
+        <input id="answer" class="grow" placeholder="Type your answer…" autocomplete="off" />
+        <button id="submitBtn">Submit</button>
+        <button id="skipBtn" class="secondary">Skip</button>
+        <button id="resetBestBtn" class="ghost">Reset High Score</button>
+      </div>
+      <div id="feedback" class="feedback"></div>
+      <div class="footer">Tips: Use keyboard <kbd>Enter</kbd> to submit. Skipping doesn’t change score.</div>
+    </main>
+
+    <p class="footer">© 2025 Duane Kamaragoda Tutoring — Progress is saved locally on this device (no accounts).</p>
+  </div>
+
+  <!-- Name modal -->
+  <div class="modal" id="nameModal">
+    <div class="sheet">
+      <h3>Welcome!</h3>
+      <p>Enter your name so we can save your high score on this device.</p>
+      <div class="row">
+        <input id="nameInput" class="grow" placeholder="e.g., Roman" />
+        <button id="saveNameBtn">Save</button>
+        <button id="cancelNameBtn" class="secondary">Cancel</button>
+      </div>
     </div>
   </div>
 
   <script>
-    // ------- CONFIG -------
-    const GAME_ID = 'surds-sprint-v1'; // change per game/topic to keep scores separate
-    const ROUND_SECONDS = 60;
+    // ---------- CONFIG ----------
+    const GAME_ID = 'surds-sprint-v2';   // change per topic/student if you want separate saves
+    const ROUND_SECONDS = 120;           // 2 minutes
 
-    // ------- DOM -------
-    const nameRow = document.getElementById('nameRow');
-    const nameInput = document.getElementById('nameInput');
-    const saveNameBtn = document.getElementById('saveNameBtn');
-    const clearNameBtn = document.getElementById('clearNameBtn');
+    // ---------- STORAGE KEYS ----------
+    const KEY_NAME = `${GAME_ID}:name`;
+    const KEY_BEST = `${GAME_ID}:best`;
 
+    // ---------- DOM ----------
     const playerNameEl = document.getElementById('playerName');
     const bestScoreEl  = document.getElementById('bestScore');
     const timeLeftEl   = document.getElementById('timeLeft');
     const scoreEl      = document.getElementById('score');
+    const questionEl   = document.getElementById('question');
+    const answerEl     = document.getElementById('answer');
+    const feedbackEl   = document.getElementById('feedback');
+    const timerBar     = document.getElementById('timerBar');
 
-    const questionEl = document.getElementById('question');
-    const answerEl   = document.getElementById('answer');
-    const submitBtn  = document.getElementById('submitBtn');
-    const startBtn   = document.getElementById('startBtn');
-    const resetBtn   = document.getElementById('resetBtn');
-    const feedbackEl = document.getElementById('feedback');
+    const startBtn     = document.getElementById('startBtn');
+    const endBtn       = document.getElementById('endBtn');
+    const submitBtn    = document.getElementById('submitBtn');
+    const skipBtn      = document.getElementById('skipBtn');
+    const resetBestBtn = document.getElementById('resetBestBtn');
+    const changeNameBtn= document.getElementById('changeNameBtn');
 
-    // ------- STORAGE KEYS -------
-    const KEY_NAME  = `${GAME_ID}:name`;
-    const KEY_BEST  = `${GAME_ID}:best`;
+    const nameModal    = document.getElementById('nameModal');
+    const nameInput    = document.getElementById('nameInput');
+    const saveNameBtn  = document.getElementById('saveNameBtn');
+    const cancelNameBtn= document.getElementById('cancelNameBtn');
 
-    // ------- STATE -------
+    // ---------- STATE ----------
     let running = false;
     let score = 0;
     let best = 0;
-    let t = null; // timer interval id
     let timeLeft = ROUND_SECONDS;
-    let currentQ = null; // { prompt, answer }
+    let timerId = null;
+    let currentQ = null;   // {prompt, answer}
 
-    // ------- UTIL: STORAGE -------
-    function loadName(){ return localStorage.getItem(KEY_NAME) || ''; }
-    function saveName(n){ localStorage.setItem(KEY_NAME, n); }
-    function loadBest(){ return Number(localStorage.getItem(KEY_BEST) || 0); }
-    function saveBest(v){ localStorage.setItem(KEY_BEST, String(v)); }
+    // ---------- STORAGE ----------
+    const loadName = () => localStorage.getItem(KEY_NAME) || '';
+    const saveName = n => localStorage.setItem(KEY_NAME, n);
+    const loadBest = () => Number(localStorage.getItem(KEY_BEST) || 0);
+    const saveBest = v => localStorage.setItem(KEY_BEST, String(v));
 
-    // ------- QUESTION GENERATOR (Surds simplify examples) -------
-    function randChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-    function genSurdQuestion(){
-      // A tiny sampler; replace with your full generator later.
-      // Each entry has a prompt and a canonical string answer (e.g., "5√2").
-      const bank = [
-        {p:"Simplify √50", a:"5√2"},
-        {p:"Simplify √72", a:"6√2"},
-        {p:"Simplify 2√18 + √8", a:"8√2"},
-        {p:"Rationalise 1/√5", a:"√5/5"},
-        {p:"Simplify √12", a:"2√3"},
-        {p:"Simplify √27", a:"3√3"},
-        {p:"Simplify √8 + √2", a:"3√2"},
-      ];
-      return randChoice(bank);
-    }
-
-    // ------- NORMALISE ANSWERS -------
+    // ---------- HELPERS ----------
+    function showModal(on=true){ nameModal.classList.toggle('on', on); if(on){ setTimeout(()=>nameInput.focus(),50);} }
+    function setTimerBar(pct){ timerBar.style.width = `${Math.max(0, Math.min(100,pct))}%`; }
     function normalise(s){
       return s
         .replace(/\s+/g,'')
-        .replace(/sqrt/gi,'√')   // allow "sqrt" typing
-        .replace(/\*/g,'')       // ignore asterisk
+        .replace(/sqrt/gi,'√')   // allow "sqrt"
+        .replace(/\*/g,'')
         .toLowerCase();
     }
 
-    // ------- RENDER -------
-    function setQuestion(q){
-      currentQ = q;
-      questionEl.textContent = q.p;
-      answerEl.value = '';
-      feedbackEl.textContent = '';
+    // Optionally accept numeric-equal answers (e.g., decimals) — still encourage simplest surd form.
+    function approxEqual(aStr, bStr){
+      const a = evalSurd(aStr);
+      const b = evalSurd(bStr);
+      if (a==null || b==null) return false;
+      return Math.abs(a-b) < 1e-6;
+    }
+
+    // VERY small evaluator for forms like "5√2", "3√5/5", "√12", "3√2+2√2" (we only use single-term answers here)
+    function evalSurd(expr){
+      try{
+        let s = expr.replace(/\s+/g,'').replace(/√/g,'Math.sqrt').replace(/(\d)(Math\.sqrt)/g,'$1*$2');
+        // Handle fractions like a/b
+        if(s.includes('/')){
+          const [num,den] = s.split('/');
+          return (Function(`return (${num})/(${den})`))();
+        }
+        return (Function(`return (${s})`))();
+      }catch{ return null; }
     }
 
     function renderHeader(){
@@ -133,87 +205,128 @@
       bestScoreEl.textContent = best;
       timeLeftEl.textContent = timeLeft;
       scoreEl.textContent = score;
-      nameRow.style.display = loadName() ? 'none' : 'flex';
     }
 
-    // ------- GAME FLOW -------
+    // ---------- QUESTION BANK (easier set) ----------
+    // All answers are in simplest surd form strings.
+    const bank = [
+      // Simplify √n
+      {p:'Simplify √8',   a:'2√2'},
+      {p:'Simplify √12',  a:'2√3'},
+      {p:'Simplify √18',  a:'3√2'},
+      {p:'Simplify √20',  a:'2√5'},
+      {p:'Simplify √27',  a:'3√3'},
+      {p:'Simplify √28',  a:'2√7'},
+      {p:'Simplify √32',  a:'4√2'},
+      {p:'Simplify √45',  a:'3√5'},
+      {p:'Simplify √50',  a:'5√2'},
+
+      // Combine like terms
+      {p:'Simplify √2 + √2',     a:'2√2'},
+      {p:'Simplify 2√3 + √3',    a:'3√3'},
+      {p:'Simplify 3√5 - √5',    a:'2√5'},
+      {p:'Simplify 4√2 - 3√2',   a:'√2'},
+
+      // Rationalise simple denominators
+      {p:'Rationalise 1/√2',     a:'√2/2'},
+      {p:'Rationalise 1/√3',     a:'√3/3'},
+      {p:'Rationalise 1/√5',     a:'√5/5'},
+    ];
+    function randQ(){ return bank[Math.floor(Math.random()*bank.length)]; }
+
+    function setQuestion(q){
+      currentQ = q;
+      questionEl.textContent = q.p;
+      feedbackEl.textContent = '';
+      answerEl.value = '';
+      answerEl.focus();
+    }
+
+    // ---------- GAME FLOW ----------
     function start(){
       if (running) return;
-      if (!loadName()){
-        feedbackEl.textContent = 'Please enter your name to start.';
-        return;
-      }
+      if (!loadName()){ showModal(true); return; }
       running = true;
       score = 0;
       timeLeft = ROUND_SECONDS;
-      setQuestion(genSurdQuestion());
+      setQuestion(randQ());
       renderHeader();
-      answerEl.focus();
-      t = setInterval(() => {
+      setTimerBar(100);
+      timerId = setInterval(()=>{
         timeLeft--;
         timeLeftEl.textContent = timeLeft;
-        if (timeLeft <= 0){ end(); }
-      }, 1000);
+        setTimerBar(100*(timeLeft/ROUND_SECONDS));
+        if(timeLeft<=0) end();
+      },1000);
     }
 
     function end(){
+      if(!running) return;
       running = false;
-      clearInterval(t);
-      t = null;
+      clearInterval(timerId);
+      timerId = null;
       feedbackEl.innerHTML = `Time! Final score: <strong>${score}</strong>.`;
       if (score > best){
         best = score; saveBest(best);
-        feedbackEl.innerHTML += ' <span class="ok">New high score!</span>';
+        feedbackEl.innerHTML += ` <span class="ok">New high score!</span>`;
       }
       renderHeader();
-      questionEl.textContent = 'Press Start to play again';
+      questionEl.textContent = 'Press Start to play again.';
     }
 
     function submit(){
-      if (!running) return;
+      if(!running) return;
       const user = normalise(answerEl.value);
       const correct = normalise(currentQ.a);
-      if (user === correct){
-        score++;
+      if (user === correct || approxEqual(user, correct)){
+        score += 10;
         scoreEl.textContent = score;
-        feedbackEl.innerHTML = '<span class="ok">Correct!</span>';
-        setQuestion(genSurdQuestion());
+        feedbackEl.innerHTML = `<span class="ok">Correct!</span>`;
+        setQuestion(randQ());
       } else {
-        feedbackEl.innerHTML = `<span class="bad">Try again.</span>`;
+        feedbackEl.innerHTML = `<span class="bad">Not quite — try again or skip.</span>`;
       }
       answerEl.focus();
     }
 
-    // ------- NAME HANDLERS -------
-    saveNameBtn.onclick = () => {
-      const n = nameInput.value.trim();
-      if (!n){ alert('Please enter a name'); return; }
-      saveName(n);
-      renderHeader();
-    };
-    clearNameBtn.onclick = () => {
-      localStorage.removeItem(KEY_NAME);
-      renderHeader();
-      nameInput.value = '';
-      nameRow.style.display = 'flex';
-    };
+    function skip(){
+      if(!running) return;
+      setQuestion(randQ());
+      feedbackEl.textContent = '';
+    }
 
-    // ------- BUTTONS -------
+    // ---------- EVENTS ----------
     startBtn.onclick = start;
+    endBtn.onclick = end;
     submitBtn.onclick = submit;
-    answerEl.addEventListener('keydown', e => {
-      if (e.key === 'Enter') submit();
-    });
-    resetBtn.onclick = () => {
-      if (confirm('Reset high score on this device?')){
+    skipBtn.onclick = skip;
+    resetBestBtn.onclick = ()=>{
+      if(confirm('Reset high score on this device?')){
         best = 0; saveBest(0); renderHeader();
       }
     };
+    changeNameBtn.onclick = ()=> showModal(true);
 
-    // ------- INIT -------
-    best = loadBest();
-    renderHeader();
-    questionEl.textContent = 'Press Start to begin';
+    answerEl.addEventListener('keydown', e=>{
+      if(e.key==='Enter') submit();
+    });
+
+    saveNameBtn.onclick = ()=>{
+      const n = nameInput.value.trim();
+      if(!n){ alert('Please enter a name'); return; }
+      saveName(n);
+      showModal(false);
+      renderHeader();
+      answerEl.focus();
+    };
+    cancelNameBtn.onclick = ()=> showModal(false);
+
+    // ---------- INIT ----------
+    (function init(){
+      best = loadBest();
+      renderHeader();
+      if(!loadName()) showModal(true);
+    })();
   </script>
 </body>
 </html>
