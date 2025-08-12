@@ -26,7 +26,6 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
     margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
     color:var(--ink); background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 60%);
   }
-
   .container{max-width:980px;margin:0 auto;padding:20px}
   .hero{
     background:linear-gradient(135deg,var(--brand),var(--brand2));
@@ -48,27 +47,12 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
   button.secondary{background:#e5e7eb; color:#111}
   button.ghost{background:transparent; border:1px solid #cbd5e1; color:#111}
   button:disabled{opacity:.6; cursor:not-allowed}
-  .card{background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); margin-top:16px}
-
-  /* Home overlay */
-  .startOverlay{
-    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-    padding:24px; background:rgba(255,255,255,.7); backdrop-filter: blur(6px);
-    z-index:10; transition:opacity .4s ease, transform .4s ease;
-  }
-  .startOverlay.off{ opacity:0; pointer-events:none; transform: scale(.98) translateY(-6px); }
-  .startCard{
-    width:min(720px,92%); background:#fff; border-radius:28px; padding:28px; box-shadow:var(--shadow);
-    text-align:center;
-  }
-  .startCard h1{margin:0 0 10px; font-size:38px; letter-spacing:.3px}
-  .startCard p{margin:0 0 14px; color:#475569}
   .bigStart{
-    margin-top:10px;
     background:linear-gradient(135deg,#16a34a,#22c55e);
-    font-weight:900; font-size:26px; padding:18px 34px; border-radius:18px;
+    font-weight:900; font-size:22px; padding:14px 26px; border-radius:14px;
     box-shadow:0 12px 28px rgba(22,163,74,.28);
   }
+  .card{background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); margin-top:16px}
 
   /* Timer bar */
   .timerWrap{position:relative; background:#e2e8f0; border-radius:999px; overflow:hidden; height:16px}
@@ -87,8 +71,7 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
     width:14px; height:14px; border-radius:50%;
     background: radial-gradient(circle at 35% 35%, #fff, #fde68a 40%, #f59e0b 70%, #f97316 100%);
     box-shadow:0 0 12px #f59e0b, 0 0 22px #fb923c, 0 0 34px rgba(249,115,22,.5);
-    pointer-events:none;
-    animation: flicker .9s infinite ease-in-out;
+    pointer-events:none; animation: flicker .9s infinite ease-in-out;
   }
   .spark::after{
     content:''; position:absolute; right:50%; top:50%; transform:translate(0,-50%);
@@ -96,26 +79,13 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
     background: linear-gradient(90deg, rgba(249,115,22,.0) 0%, rgba(249,115,22,.35) 60%, rgba(249,115,22,.0) 100%);
     filter: blur(1px);
   }
-  @keyframes flicker{
-    0%{ transform:translate(-50%,-50%) scale(1); opacity:.95 }
-    50%{ transform:translate(-50%,-50%) scale(1.08); opacity:.85 }
-    100%{ transform:translate(-50%,-50%) scale(1); opacity:.95 }
-  }
+  @keyframes flicker{0%{transform:translate(-50%,-50%) scale(1);opacity:.95}50%{transform:translate(-50%,-50%) scale(1.08);opacity:.85}100%{transform:translate(-50%,-50%) scale(1);opacity:.95}}
 
-  .question{
-    font-size: clamp(34px, 6.2vw, 56px);
-    font-weight: 900; letter-spacing:.4px; margin:6px 0 10px;
-  }
-  .hint{color:#64748b; font-size:14px; margin-top:0}
+  .question{font-size:clamp(34px,6.2vw,56px);font-weight:900;letter-spacing:.4px;margin:6px 0 10px}
+  .hint{color:#64748b;font-size:14px;margin-top:0}
 
-  /* Live formatted input display */
-  .mathEcho{
-    margin-top:8px; padding:10px 12px; border-radius:12px;
-    background:#f8fafc; border:1px dashed #cbd5e1; color:#0f172a;
-    font-size:18px;
-  }
+  .mathEcho{margin-top:8px;padding:10px 12px;border-radius:12px;background:#f8fafc;border:1px dashed #cbd5e1;color:#0f172a;font-size:18px}
 
-  /* Correct flash */
   .correctFlash{ position:relative; margin-bottom:8px; }
   .correctFlash::before{
     content:''; position:absolute; inset:-6px -6px; border-radius:18px; pointer-events:none;
@@ -128,14 +98,15 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
   .ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:var(--warn)}
   .footer{color:#6b7280; font-size:12px; margin-top:18px; text-align:center}
 
-  /* Name modal */
-  .modal{
-    position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-    background:rgba(15,23,42,.35); backdrop-filter:blur(3px); z-index:20
-  }
-  .modal.on{ display:flex }
-  .modal .sheet{ background:#fff; border-radius:18px; box-shadow:var(--shadow); max-width:520px; width:92%; padding:22px; text-align:center }
-  .sheet h3{ margin:0 0 8px } .sheet p{ margin:0 12px 12px; color:#6b7280 }
+  /* Score popups */
+  .floatScore{position:absolute;pointer-events:none;left:50%;transform:translateX(-50%);font-weight:900;font-size:30px;opacity:0;animation:floatUp .9s ease forwards}
+  .floatScore.ok{color:#22c55e;text-shadow:0 2px 6px rgba(34,197,94,.25)}
+  .floatScore.bad{color:#ef4444;text-shadow:0 2px 6px rgba(239,68,68,.25)}
+  @keyframes floatUp{0%{opacity:0;transform:translate(-50%,10px) scale(.9)}10%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-40px) scale(1.05)}}
+
+  /* Summary */
+  .summary{padding:14px;border:1px solid #e5e7eb;border-radius:14px;background:#f9fafb;margin-top:10px}
+  .summary h3{margin:0 0 8px}
 </style>
 </head>
 <body>
@@ -149,14 +120,32 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
 
   <section class="panel">
     <div class="row">
-      <span class="stat">Player: <strong id="playerName">—</strong></span>
+      <!-- Inline name (no popups) -->
+      <label class="stat">
+        Name:
+        <input id="nameInline" placeholder="e.g., Duane" style="margin-left:6px; width:180px">
+      </label>
+      <button id="saveNameInline" class="ghost">Save Name</button>
+
+      <span class="stat">Player: <strong id="playerName">Guest</strong></span>
       <span class="stat">High score: <strong id="bestScore">0</strong></span>
       <span class="stat">Time left: <strong id="timeLeft">60</strong>s</span>
       <span class="stat">Score: <strong id="score">0</strong></span>
+
       <span class="grow"></span>
-      <button id="changeNameBtn" class="ghost">Set / Change Name</button>
+
+      <label class="stat">
+        Mode:
+        <select id="modeSelect">
+          <option value="normal">Normal</option>
+          <option value="hard">Hard</option>
+        </select>
+      </label>
+
+      <button id="startBtn" class="bigStart">▶ Start</button>
       <button id="endBtn" class="secondary">End</button>
     </div>
+
     <div class="timerWrap" style="margin-top:12px">
       <div id="timerBar" class="timer" style="width:100%"></div>
       <div id="spark" class="spark" style="left: 100%"></div>
@@ -169,9 +158,9 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
   <main class="card">
     <div id="gameArea">
       <div class="correctFlash" id="correctFlash">
-        <div class="question" id="question">Press <em>Start</em> to begin.</div>
+        <div class="question" id="question">Pick a mode and press <em>Start</em>.</div>
       </div>
-      <div class="hint">Type your answer in simplest surd form. You can type <code>sqrt</code> or use <code>√</code>. Skipping has a small penalty.</div>
+      <div class="hint">Type answers in simplest surd form. You can type <code>sqrt</code> or use <code>√</code>. Skipping has a small penalty.</div>
 
       <div class="mathEcho">
         <div style="font-size:12px; color:#64748b; margin-bottom:6px;">Your answer (formatted):</div>
@@ -185,47 +174,23 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
         <button id="resetBestBtn" class="ghost">Reset High Score</button>
       </div>
       <div id="feedback" class="feedback"></div>
+
+      <div id="summary" class="summary" style="display:none">
+        <h3>Round Summary</h3>
+        <div id="sumStats"></div>
+        <div style="margin-top:10px">
+          <button id="playAgain" class="bigStart">▶ Play Again</button>
+        </div>
+      </div>
+
       <div class="footer">© 2025 Duane Kamaragoda Tutoring — Progress is saved locally on this device (no accounts).</div>
     </div>
   </main>
 </div>
 
-<!-- Home Overlay (choose mode & start) -->
-<div class="startOverlay" id="startOverlay">
-  <div class="startCard">
-    <h1>Surds Sprint</h1>
-    <p>Select a mode and hit Start. You only need to enter your name once.</p>
-    <div style="margin:12px 0 16px;">
-      <label style="font-weight:600; margin-right:8px;">Mode:</label>
-      <select id="modeSelect" style="padding:10px 12px; border-radius:12px; border:1px solid #e2e8f0;">
-        <option value="normal">Normal</option>
-        <option value="hard">Hard</option>
-      </select>
-    </div>
-    <div class="row" style="justify-content:center; margin-top:8px">
-      <button id="openNameBtn" class="ghost">Set / Change Name</button>
-      <button id="startBtn" class="bigStart">▶ Start</button>
-    </div>
-    <p style="margin-top:10px; font-size:12px; color:#6b7280">Made by <strong>Duane Kamaragoda Tutoring</strong></p>
-  </div>
-</div>
-
-<!-- Name modal (shown only first time, or when you click Set / Change) -->
-<div class="modal" id="nameModal" aria-modal="true" role="dialog">
-  <div class="sheet">
-    <h3>Your Player Name</h3>
-    <p>We use this to save high scores on this device.</p>
-    <div class="row" style="justify-content:center">
-      <input id="nameInput" class="grow" placeholder="e.g., Duane" style="max-width:320px"/>
-      <button id="saveNameBtn">Save</button>
-      <button id="cancelNameBtn" class="secondary">Cancel</button>
-    </div>
-  </div>
-</div>
-
 <script>
 /* ===== CONFIG & KEYS ===== */
-const GAME_ID = 'surds-sprint-v10';
+const GAME_ID = 'surds-sprint-v11';
 const ROUND_SECONDS = 60;
 const KEY_NAME = `${GAME_ID}:name`;
 const KEY_BEST_NORMAL = `${GAME_ID}:best:normal`;
@@ -234,6 +199,9 @@ const KEY_BEST_HARD   = `${GAME_ID}:best:hard`;
 const SCORE_CORRECT = 20, SCORE_WRONG = -10, SCORE_SKIP = -5;
 
 /* ===== DOM ===== */
+const nameInline     = document.getElementById('nameInline');
+const saveNameInline = document.getElementById('saveNameInline');
+
 const playerNameEl = document.getElementById('playerName');
 const bestScoreEl  = document.getElementById('bestScore');
 const timeLeftEl   = document.getElementById('timeLeft');
@@ -248,21 +216,18 @@ const endBtn       = document.getElementById('endBtn');
 const submitBtn    = document.getElementById('submitBtn');
 const skipBtn      = document.getElementById('skipBtn');
 const resetBestBtn = document.getElementById('resetBestBtn');
-const changeNameBtn= document.getElementById('changeNameBtn');
 const modeSelect   = document.getElementById('modeSelect');
-const startOverlay = document.getElementById('startOverlay');
-const nameModal    = document.getElementById('nameModal');
-const nameInput    = document.getElementById('nameInput');
-const saveNameBtn  = document.getElementById('saveNameBtn');
-const cancelNameBtn= document.getElementById('cancelNameBtn');
-const openNameBtn  = document.getElementById('openNameBtn');
 const formattedMath= document.getElementById('formattedMath');
 const correctFlash = document.getElementById('correctFlash');
+const summaryBox   = document.getElementById('summary');
+const sumStatsEl   = document.getElementById('sumStats');
+const playAgainBtn = document.getElementById('playAgain');
 
 /* ===== STATE ===== */
 let running = false, score = 0, bestNormal = 0, bestHard = 0;
 let timeLeft = ROUND_SECONDS, timerId = null, lastDangerPulseAt = Infinity;
 let currentQ = null, deck = [];
+let stats = {attempted:0, correct:0, wrong:0, skipped:0};
 
 /* ===== STORAGE ===== */
 const loadName = () => localStorage.getItem(KEY_NAME) || '';
@@ -287,13 +252,9 @@ function soundWrong(){ tone(220,.12,'square',0.06); setTimeout(()=>tone(180,.12,
 function soundSkip(){ tone(520,.06,'sine',0.04); setTimeout(()=>tone(620,.06,'sine',0.03),70); }
 
 /* ===== UTILS ===== */
-function showNameModal(on=true){
-  nameModal.classList.toggle('on', on);
-  if (on) setTimeout(()=>nameInput.focus(), 50);
-}
 function currentMode(){ return modeSelect.value || 'normal'; }
 function renderHeader(){
-  playerNameEl.textContent = loadName() || '—';
+  playerNameEl.textContent = loadName() || 'Guest';
   timeLeftEl.textContent   = timeLeft;
   scoreEl.textContent      = score;
   bestScoreEl.textContent  = currentMode()==='normal' ? bestNormal : bestHard;
@@ -349,15 +310,6 @@ function floatScore(text, ok=true){
   el.style.top = (cardRect.top + 18) + 'px';
   setTimeout(()=> el.remove(), 1000);
 }
-/* Score popup styles (inject) */
-const stylePopup=document.createElement('style');
-stylePopup.textContent=`
-.floatScore{position:absolute;pointer-events:none;left:50%;transform:translateX(-50%);font-weight:900;font-size:30px;opacity:0;animation:floatUp .9s ease forwards}
-.floatScore.ok{color:#22c55e;text-shadow:0 2px 6px rgba(34,197,94,.25)}
-.floatScore.bad{color:#ef4444;text-shadow:0 2px 6px rgba(239,68,68,.25)}
-@keyframes floatUp{0%{opacity:0;transform:translate(-50%,10px) scale(.9)}10%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-40px) scale(1.05)}}
-`;
-document.head.appendChild(stylePopup);
 
 /* ===== QUESTION BANKS ===== */
 const BANK_NORMAL = [
@@ -411,7 +363,12 @@ function nextQuestion(){
 /* ===== START / END / SUBMIT FLOW ===== */
 function start(){
   if (running) return;
-  if (!loadName()){ showNameModal(true); return; } // Require name BEFORE starting
+  summaryBox.style.display = 'none';
+  stats = {attempted:0, correct:0, wrong:0, skipped:0};
+  // Save inline name (or use Guest)
+  const n = (nameInline.value || '').trim();
+  if (n) saveName(n); else saveName('Guest');
+
   running = true;
   score = 0;
   timeLeft = ROUND_SECONDS;
@@ -421,10 +378,6 @@ function start(){
   nextQuestion();
   renderHeader();
   setTimerBar();
-
-  // Hide home overlay ONLY when explicitly starting
-  startOverlay.classList.add('off');
-  setTimeout(()=> startOverlay.style.display='none', 420);
 
   timerId = setInterval(()=>{
     timeLeft--;
@@ -446,21 +399,38 @@ function end(){
   } else {
     if (score > bestHard){ bestHard = score; saveBestHard(bestHard); isHigh = true; }
   }
-  feedbackEl.innerHTML = `Time! Final score: <strong>${score}</strong>.` +
-    (isHigh ? ` <span class="ok"><strong>New ${mode} high score!</strong></span>` : '');
-  questionEl.textContent = 'Press Start to play again.';
+  const attempted = stats.attempted || 1;
+  const acc = Math.round((stats.correct/attempted)*100);
 
-  // Return to home screen (NO name modal)
-  startOverlay.style.display='flex';
-  setTimeout(()=>startOverlay.classList.remove('off'),10);
+  sumStatsEl.innerHTML = `
+    <div><strong>Final score:</strong> ${score} ${isHigh?'<span class="ok">— New high score!</span>':''}</div>
+    <div style="margin-top:6px; display:flex; gap:14px; flex-wrap:wrap;">
+      <span>Attempted: <strong>${stats.attempted}</strong></span>
+      <span class="ok">Correct: <strong>${stats.correct}</strong></span>
+      <span class="bad">Wrong: <strong>${stats.wrong}</strong></span>
+      <span class="warn">Skipped: <strong>${stats.skipped}</strong></span>
+      <span>Accuracy: <strong>${acc}%</strong></span>
+      <span>Mode: <strong>${mode}</strong></span>
+    </div>
+  `;
+  summaryBox.style.display = 'block';
+
   renderHeader();
+  questionEl.textContent = 'Pick a mode and press Start.';
+  feedbackEl.textContent = '';
+  answerEl.value = '';
+  updateFormattedEcho('');
 }
 
 function submit(){
   if (!running) return;
   const user = normalise(answerEl.value);
   const correct = normalise(currentQ.a);
+  if (!user) return;
+
+  stats.attempted++;
   if (user === correct || approxEqual(user, correct)){
+    stats.correct++;
     const newScore = score + SCORE_CORRECT;
     floatScore('+'+SCORE_CORRECT, true); soundCorrect();
     animateScoreTo(newScore); score = newScore;
@@ -468,6 +438,7 @@ function submit(){
     nextQuestion();
     feedbackEl.innerHTML = `<span class="ok">Nice! Keep going.</span>`;
   } else {
+    stats.wrong++;
     const newScore = Math.max(0, score + SCORE_WRONG);
     floatScore(String(SCORE_WRONG), false); soundWrong();
     animateScoreTo(newScore); score = newScore;
@@ -477,6 +448,7 @@ function submit(){
 
 function skip(){
   if (!running) return;
+  stats.skipped++;
   const newScore = Math.max(0, score + SCORE_SKIP);
   floatScore(String(SCORE_SKIP), false); soundSkip();
   animateScoreTo(newScore); score = newScore;
@@ -493,8 +465,6 @@ function flashCorrect(){
 function toTeX(raw){
   if (!raw) return '\\text{—}';
   let s = raw.replace(/sqrt/gi, '√');
-
-  // Simple a/b fraction
   const fracMatch = s.match(/^([^\/]+)\/([^\/]+)$/);
   if (fracMatch){
     const num = fracMatch[1], den = fracMatch[2];
@@ -521,6 +491,7 @@ function updateFormattedEcho(raw){
 
 /* ===== EVENTS ===== */
 startBtn.onclick = start;
+playAgainBtn.onclick = start;
 endBtn.onclick   = end;
 submitBtn.onclick= submit;
 skipBtn.onclick  = skip;
@@ -529,39 +500,24 @@ resetBestBtn.onclick = ()=>{
     bestNormal = 0; bestHard = 0; saveBestNormal(0); saveBestHard(0); renderHeader();
   }
 };
-changeNameBtn.onclick = ()=> { nameInput.value = loadName(); showNameModal(true); };
-openNameBtn.onclick   = changeNameBtn.onclick;
-modeSelect.onchange   = ()=> renderHeader();
+modeSelect.onchange = ()=> renderHeader();
 answerEl.addEventListener('keydown', e=>{ if (e.key === 'Enter') submit(); });
 answerEl.addEventListener('input', (e)=> updateFormattedEcho(e.target.value) );
 
-saveNameBtn.onclick = ()=>{
-  const n = nameInput.value.trim();
-  if (!n){ alert('Please enter a name'); return; }
-  saveName(n);
+saveNameInline.onclick = ()=>{
+  const n = (nameInline.value || '').trim();
+  saveName(n || 'Guest');
   renderHeader();
-  showNameModal(false); // Do NOT start the game
 };
-cancelNameBtn.onclick = ()=> showNameModal(false);
 
 /* ===== INIT ===== */
 (function init(){
   bestNormal = loadBestNormal();
   bestHard   = loadBestHard();
-  renderHeader();
 
-  // Always show the home overlay (mode + Start)
-  startOverlay.style.display='flex';
-
-  // Show name modal ONLY on first visit (no name yet)
   const existingName = loadName();
-  if (!existingName){
-    nameInput.value = '';
-    showNameModal(true);
-  } else {
-    nameInput.value = existingName;
-  }
-
+  nameInline.value = existingName || '';
+  renderHeader();
   updateFormattedEcho('');
 })();
 </script>
