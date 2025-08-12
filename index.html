@@ -16,7 +16,7 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
 
 <style>
   :root{
-    --bg1:#ecfdf5; --bg2:#f8fafc; --card:#ffffff; --ink:#0f172a; --muted:#475569;
+    --bg1:#ecfdf5; --bg2:#f8fafc; --card:#ffffff; --ink:#0f172a;
     --brand:#22c55e; --brand2:#10b981; --ok:#16a34a; --bad:#dc2626; --warn:#f59e0b;
     --shadow:0 12px 32px rgba(0,0,0,.10); --radius:20px;
   }
@@ -25,7 +25,6 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
   body{
     margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
     color:var(--ink); background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 60%);
-    overflow-x:hidden;
   }
 
   .container{max-width:980px;margin:0 auto;padding:20px}
@@ -51,11 +50,11 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
   button:disabled{opacity:.6; cursor:not-allowed}
   .card{background:var(--card); border-radius:var(--radius); padding:22px; box-shadow:var(--shadow); margin-top:16px}
 
-  /* Start overlay */
+  /* Start overlay (home screen) */
   .startOverlay{
     position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
     padding:24px; background:rgba(255,255,255,.6); backdrop-filter: blur(6px);
-    z-index:10; transition:opacity .5s ease, transform .5s ease; will-change:opacity, transform;
+    z-index:10; transition:opacity .4s ease, transform .4s ease;
   }
   .startOverlay.off{ opacity:0; pointer-events:none; transform: scale(.98) translateY(-6px); }
   .startCard{
@@ -103,7 +102,6 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
     100%{ transform:translate(-50%,-50%) scale(1); opacity:.95 }
   }
 
-  /* Question section (no floating animation now) */
   .question{
     font-size: clamp(34px, 6.2vw, 56px);
     font-weight: 900; letter-spacing:.4px; margin:6px 0 10px;
@@ -117,11 +115,8 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
     font-size:18px;
   }
 
-  /* Correct flash background */
-  .correctFlash{
-    position:relative;
-    margin-bottom:8px;
-  }
+  /* Correct flash */
+  .correctFlash{ position:relative; margin-bottom:8px; }
   .correctFlash::before{
     content:''; position:absolute; inset:-6px -6px; border-radius:18px; pointer-events:none;
     background: radial-gradient( circle at 50% 50%, rgba(34,197,94,.22), rgba(34,197,94,0) 55% );
@@ -132,15 +127,6 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
   .feedback{min-height:28px; margin-top:10px}
   .ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:var(--warn)}
   .footer{color:#6b7280; font-size:12px; margin-top:18px; text-align:center}
-
-  /* Modal (name) */
-  .modal{
-    position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-    background:rgba(15,23,42,.35); backdrop-filter:blur(3px); z-index:20
-  }
-  .modal.on{ display:flex }
-  .modal .sheet{ background:#fff; border-radius:18px; box-shadow:var(--shadow); max-width:520px; width:92%; padding:22px }
-  .sheet h3{ margin:0 0 8px } .sheet p{ margin:0 0 12px; color:#6b7280 }
 </style>
 </head>
 <body>
@@ -166,7 +152,7 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
           <option value="hard">Hard</option>
         </select>
       </label>
-      <button id="changeNameBtn" class="ghost">Change name</button>
+      <button id="changeNameBtn" class="ghost">Set / Change name</button>
       <button id="endBtn" class="secondary">End</button>
     </div>
     <div class="timerWrap" style="margin-top:12px">
@@ -202,11 +188,11 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
   </main>
 </div>
 
-<!-- Start Overlay -->
+<!-- Start Overlay (Home) -->
 <div class="startOverlay" id="startOverlay">
   <div class="startCard">
     <h1>Surds Sprint</h1>
-    <p>Enter your name once, pick a mode, then race the clock. Ready?</p>
+    <p>Enter your name once (first visit), pick a mode, then race the clock.</p>
     <div class="row" style="justify-content:center; margin-top:8px">
       <button id="openNameBtn" class="ghost">Set / Change Name</button>
       <button id="startBtn" class="bigStart">▶ Start</button>
@@ -215,23 +201,22 @@ window.MathJax = { tex:{inlineMath:[['$','$'],['\\(','\\)']]}, svg:{fontCache:'g
   </div>
 </div>
 
-<!-- Name modal -->
-<div class="modal" id="nameModal" aria-modal="true" role="dialog">
+<!-- Name modal (only shown on first visit or when you click "Set / Change Name") -->
+<div class="modal" id="nameModal" aria-modal="true" role="dialog" style="display:none;">
   <div class="sheet">
-    <h3>Welcome!</h3>
-    <p>Enter your name so we can save your high score on this device.</p>
+    <h3>Your Player Name</h3>
+    <p>We’ll use this to save your high scores on this device.</p>
     <div class="row">
       <input id="nameInput" class="grow" placeholder="e.g., Duane"/>
       <button id="saveNameBtn">Save</button>
       <button id="cancelNameBtn" class="secondary">Cancel</button>
     </div>
-    <p class="hint" style="margin-top:10px;">You must set a name before you can play.</p>
   </div>
 </div>
 
 <script>
 /* ===== CONFIG & KEYS ===== */
-const GAME_ID = 'surds-sprint-v8';
+const GAME_ID = 'surds-sprint-v9';
 const ROUND_SECONDS = 60;
 const KEY_NAME = `${GAME_ID}:name`;
 const KEY_BEST_NORMAL = `${GAME_ID}:best:normal`;
@@ -256,14 +241,14 @@ const skipBtn      = document.getElementById('skipBtn');
 const resetBestBtn = document.getElementById('resetBestBtn');
 const changeNameBtn= document.getElementById('changeNameBtn');
 const modeSelect   = document.getElementById('modeSelect');
+const startOverlay = document.getElementById('startOverlay');
 const nameModal    = document.getElementById('nameModal');
 const nameInput    = document.getElementById('nameInput');
 const saveNameBtn  = document.getElementById('saveNameBtn');
 const cancelNameBtn= document.getElementById('cancelNameBtn');
-const correctFlash = document.getElementById('correctFlash');
-const formattedMath= document.getElementById('formattedMath');
-const startOverlay = document.getElementById('startOverlay');
 const openNameBtn  = document.getElementById('openNameBtn');
+const formattedMath= document.getElementById('formattedMath');
+const correctFlash = document.getElementById('correctFlash');
 
 /* ===== STATE ===== */
 let running = false, score = 0, bestNormal = 0, bestHard = 0;
@@ -293,7 +278,10 @@ function soundWrong(){ tone(220,.12,'square',0.06); setTimeout(()=>tone(180,.12,
 function soundSkip(){ tone(520,.06,'sine',0.04); setTimeout(()=>tone(620,.06,'sine',0.03),70); }
 
 /* ===== UTILS ===== */
-function showModal(on=true){ nameModal.classList.toggle('on', on); if(on){ setTimeout(()=>nameInput.focus(),50);} }
+function showNameModal(on=true){
+  nameModal.style.display = on ? 'flex' : 'none';
+  if (on) setTimeout(()=>nameInput.focus(),50);
+}
 function currentMode(){ return modeSelect.value || 'normal'; }
 function renderHeader(){
   playerNameEl.textContent = loadName() || '—';
@@ -414,7 +402,7 @@ function nextQuestion(){
 /* ===== START / END / SUBMIT FLOW ===== */
 function start(){
   if (running) return;
-  if (!loadName()){ showModal(true); return; }
+  if (!loadName()){ showNameModal(true); return; } // only if truly no name saved
   running = true;
   score = 0;
   timeLeft = ROUND_SECONDS;
@@ -425,9 +413,9 @@ function start(){
   renderHeader();
   setTimerBar();
 
-  // Dismiss start overlay (only on explicit Start click)
+  // Hide home overlay ONLY when explicitly starting
   startOverlay.classList.add('off');
-  setTimeout(()=> startOverlay.style.display='none', 520);
+  setTimeout(()=> startOverlay.style.display='none', 420);
 
   timerId = setInterval(()=>{
     timeLeft--;
@@ -453,7 +441,7 @@ function end(){
     (isHigh ? ` <span class="ok"><strong>New ${mode} high score!</strong></span>` : '');
   questionEl.textContent = 'Press Start to play again.';
 
-  // Show overlay again (not starting automatically)
+  // Return to home screen (no name modal here)
   startOverlay.style.display='flex';
   setTimeout(()=>startOverlay.classList.remove('off'),10);
   renderHeader();
@@ -532,8 +520,11 @@ resetBestBtn.onclick = ()=>{
     bestNormal = 0; bestHard = 0; saveBestNormal(0); saveBestHard(0); renderHeader();
   }
 };
-changeNameBtn.onclick = ()=> showModal(true);
-openNameBtn.onclick   = ()=> showModal(true);
+changeNameBtn.onclick = ()=> {
+  nameInput.value = loadName();
+  showNameModal(true);
+};
+openNameBtn.onclick   = changeNameBtn.onclick;
 modeSelect.onchange   = ()=> renderHeader();
 answerEl.addEventListener('keydown', e=>{ if (e.key === 'Enter') submit(); });
 answerEl.addEventListener('input', (e)=> updateFormattedEcho(e.target.value) );
@@ -542,18 +533,26 @@ saveNameBtn.onclick = ()=>{
   const n = nameInput.value.trim();
   if (!n){ alert('Please enter a name'); return; }
   saveName(n);
-  showModal(false);   // close modal only
-  renderHeader();     // DO NOT start the game
+  renderHeader();
+  showNameModal(false); // IMPORTANT: do not start the game here
 };
-cancelNameBtn.onclick = ()=> showModal(false);
+cancelNameBtn.onclick = ()=> showNameModal(false);
 
 /* ===== INIT ===== */
 (function init(){
   bestNormal = loadBestNormal();
   bestHard   = loadBestHard();
   renderHeader();
-  // Always show start overlay on load; do NOT auto-start after naming
+  // Always show home screen on load
   startOverlay.style.display='flex';
+  // Only show name modal automatically on first ever visit (no name saved)
+  const existingName = loadName();
+  if (!existingName){
+    nameInput.value = '';
+    showNameModal(true);
+  } else {
+    nameInput.value = existingName;
+  }
   updateFormattedEcho('');
 })();
 </script>
